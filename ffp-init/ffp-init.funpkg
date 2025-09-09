@@ -7,7 +7,8 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 mkdir -p $D/ffp/etc
@@ -35,9 +36,9 @@ cp $X/{DESCR,HOMEPAGE} $D/install/
 
 # fp
 cd $W
-tar xf $X/fp-*.tar*
+tar -vxf $X/fp-*.tar*
 cd fp-*
-make
+colormake V=2
 sed -i '1 s,^#.*,#/ffp/bin/bash,' fpc
 mkdir -p $D/ffp/{bin,sbin,run.d,var/log/fp,var/run}
 install -m 0755 fp.master $D/ffp/sbin/

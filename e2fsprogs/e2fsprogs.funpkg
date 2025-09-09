@@ -14,11 +14,12 @@ case "$FFP_ARCH" in
 esac
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 mkdir build
 cd build
@@ -39,11 +40,11 @@ PKG_CONFIG=/ffp/bin/true \
 	--disable-fsck \
 	$extra_config
 
-make
+colormake V=2
 #	LIBUUID="-luuid" STATIC_LIBUUID="-luuid" \
 #	LIBBLKID="-lblkid" STATIC_LIBBLKID="-lblkid"
 
-make DESTDIR=$D install install-libs
+colormake DESTDIR=$D install install-libs V=2
 
 rm -rf $D$mandir/man3
 

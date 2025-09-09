@@ -7,7 +7,8 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 b=$D/ffp/lib/$PN-$PV
@@ -28,15 +29,15 @@ for i in XML-Parser; do
 	n=$(basename $a .tar.gz)
 
 	cd $W
-	tar xf $a
+	tar -vxf $a
         cd $n || cd ${n%-*}
         echo $n >>$D/install/DESCR
 
         sed -i 's,/usr/,/ffp/,g' Makefile.PL
 
         yes '' | eval perl $INC Makefile.PL INSTALLDIRS=vendor
-        make
-        make DESTDIR=$D install
+        colormake
+        colormake DESTDIR=$D install
 done
 
 rm -rf $D$mandir/man3

@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 # fix MANDIR
@@ -24,10 +25,10 @@ $CONFIG_SHELL ./config \
         --openssldir=/ffp/etc/ssl \
         no-idea no-rc5 shared
 
-make
+colormake V=2
 
 mkdir -p $D/ffp/etc/ssl
-make INSTALL_PREFIX=$D install
+colormake INSTALL_PREFIX=$D install V=2
 
 cp -r certs $D/ffp/etc/ssl
 

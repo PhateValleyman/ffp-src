@@ -7,19 +7,20 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
 ./configure \
 	--prefix=/ffp \
 	--shared
-make
-make prefix=$D/ffp install
+colormake V=2
+colormake prefix=$D/ffp install V=2
 
 rm -rf $D$mandir/man3
 

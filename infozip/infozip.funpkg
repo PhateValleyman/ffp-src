@@ -7,22 +7,23 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/unzip*.tar*
-tar xf $X/zip*.tar*
+tar -vxf $X/unzip*.tar*
+tar -vxf $X/zip*.tar*
 
 cd zip*
-make -f unix/Makefile generic_gcc LD="gcc $FFP_LDFLAGS"
-make -f unix/Makefile install BINDIR=$D/ffp/bin MANDIR=$D$mandir/man1
+colormake -f unix/Makefile generic_gcc LD="gcc $FFP_LDFLAGS" V=2
+colormake -f unix/Makefile install BINDIR=$D/ffp/bin MANDIR=$D$mandir/man1 V=2
 #P=$P/zip _doc BUGS LICENSE README* TODO US* WHATSNEW WHERE
 cd ..
 
 cd unzip*
-make -f unix/Makefile generic_gcc LD="gcc $FFP_LDFLAGS"
-make -f unix/Makefile install BINDIR=$D/ffp/bin MANDIR=$D$mandir/man1
+colormake -f unix/Makefile generic_gcc LD="gcc $FFP_LDFLAGS" V=2
+colormake -f unix/Makefile install BINDIR=$D/ffp/bin MANDIR=$D$mandir/man1 V=2
 #P=$P/unzip _doc BUGS LICENSE README* WHERE
 cd ..
 

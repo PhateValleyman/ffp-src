@@ -15,12 +15,23 @@ cd $W
 tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
+CFLAGS="FFP_CFLAGS" \
+LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--mandir=$mandir \
+	--infodir=$infodir \
+	--disable-libmagic \
+	--enable-utf8 \
+	--disable-nls
+
 colormake V=2
-colormake DESTDIR=$D PREFIX=/ffp install V=2
+colormake DESTDIR=$D install V=2
 
 mkdir -p $D/install
 cp $X/{DESCR,HOMEPAGE} $D/install/
 
 cd $D
 makepkg $PN $PV $PR
-

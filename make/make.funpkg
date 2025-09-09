@@ -1,17 +1,18 @@
 #!/ffp/bin/sh -xe
 
-PN=make
+PN=colormake
 PV=3.81
 PR=1
 
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
@@ -19,8 +20,8 @@ CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
 	--prefix=/ffp \
 	--build=$GNU_BUILD \
 	--host=$GNU_HOST
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 mkdir -p $D/install
 cp $X/{DESCR,HOMEPAGE} $D/install/

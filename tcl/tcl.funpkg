@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/tcl*-src.tar*
+tar -vxf $X/tcl*-src.tar*
 cd tcl*/unix
 
 LDFLAGS="$FFP_LDFLAGS" \
@@ -23,8 +24,8 @@ LDFLAGS="$FFP_LDFLAGS" \
 	--mandir=$mandir \
 	--disable-nls
 
-make
-make DESTDIR=$D install install-private-headers
+colormake V=2
+colormake DESTDIR=$D install install-private-headers V=2
 ln -s tclsh8.5 $D/ffp/bin/tclsh
 
 # api docs

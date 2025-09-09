@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-*
 patch -p1 -i $X/binutils-pr13224.patch
 
@@ -29,8 +30,8 @@ CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
 	--disable-multilib \
 	--enable-shared
 
-make tooldir=/ffp
-make tooldir=/ffp DESTDIR=$D install
+colormake tooldir=/ffp V=2
+colormake tooldir=/ffp DESTDIR=$D install V=2
 
 mkdir -p $D/install
 cp $X/{DESCR,HOMEPAGE} $D/install/

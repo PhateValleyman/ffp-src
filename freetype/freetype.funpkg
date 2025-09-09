@@ -7,17 +7,18 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 LDFLAGS="$FFP_LDFLAGS" \
-make setup CFG="--prefix=/ffp --build=$GNU_BUILD"
-make
-make DESTDIR=$D install
+colormake setup CFG="--prefix=/ffp --build=$GNU_BUILD" V=2
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 mkdir -p $D/install
 cp $X/{DESCR,HOMEPAGE} $D/install/

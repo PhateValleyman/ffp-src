@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/db-$PV.tar*
+tar -vxf $X/db-$PV.tar*
 cd db-$PV
 cd build_unix
 
@@ -26,8 +27,8 @@ LDFLAGS="$FFP_LDFLAGS" \
 	--enable-smallbuild \
 	--with-tcl=/ffp/lib
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 mkdir -p $D/install
 cp $X/{DESCR,HOMEPAGE} $D/install/

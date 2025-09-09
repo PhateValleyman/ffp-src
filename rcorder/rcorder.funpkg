@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 
 mv pkgsrc/pkgtools/rcorder/files     rcorder
 mv pkgsrc/pkgtools/libnbcompat/files rcorder/libnbcompat
@@ -24,7 +25,7 @@ patch -p1 -i $X/libnbcompat-Makefile.patch
 	--host=$GNU_HOST \
 	--prefix=/ffp
 
-make
+colormake V=2
 
 cd ..
 CFLAGS="-O2 -Ilibnbcompat" \
@@ -35,8 +36,8 @@ LIBS="libnbcompat/libnbcompat.a" \
 	--prefix=/ffp \
 	--mandir=$mandir
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 mkdir -p $D/install
 cp $X/{DESCR,HOMEPAGE} $D/install/

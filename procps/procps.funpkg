@@ -7,14 +7,15 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 #
 # procps
 #
 cd $W
-tar xf $X/procps-*.tar*
+tar -vxf $X/procps-*.tar*
 cd procps-*
 
 patch -p1 -i $X/procps-3.2.7-ffp.diff
@@ -22,14 +23,14 @@ patch -p1 -i $X/procps-3.2.7-ffp.diff
 patch -p1 -i $X/procps-3.2.8-fix_HZ_errors-1.patch
 patch -p1 -i $X/procps-3.2.8-watch_unicode-1.patch
 
-make LDFLAGS="$FFP_LDFLAGS"
-make DESTDIR=$D ldconfig=: install
+colormake LDFLAGS="$FFP_LDFLAGS" V=2
+colormake DESTDIR=$D ldconfig=: install V=2
 
 #
 # psmisc
 #
 cd $W
-tar xf $X/psmisc-*.tar*
+tar -vxf $X/psmisc-*.tar*
 cd psmisc-*
 
 case "$FFP_ARCH" in
@@ -47,8 +48,8 @@ LDFLAGS="$FFP_LDFLAGS" \
         --disable-nls \
         --exec-prefix=""
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 # psmisc prefers to install to /bin, fix it
 mkdir -p $D/ffp/bin
@@ -62,14 +63,14 @@ ln -s killall $D/ffp/bin/pidof
 # procinfo
 #
 cd $W
-tar xf $X/procinfo-*.tar*
+tar -vxf $X/procinfo-*.tar*
 cd procinfo-*
 
 patch -p1 -i $X/procinfo-18-fixes.patch
 
 mkdir -p $D/ffp/bin
 
-make LDFLAGS="$FFP_LDFLAGS"
+colormake LDFLAGS="$FFP_LDFLAGS" V=2
 install -m 0755 procinfo $D/ffp/bin/
 
 sed '1 s,#!.*,#!/ffp/bin/perl,' lsdev.pl >$D/ffp/bin/lsdev

@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 LDFLAGS="$FFP_LDFLAGS" \
@@ -23,8 +24,8 @@ $CONFIG_SHELL ./configure \
 	--mandir=$mandir \
 	--disable-nls
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 #_doc CHANGES COPYING README RELEASE-NOTES
 

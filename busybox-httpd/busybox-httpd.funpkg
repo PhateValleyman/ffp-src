@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/busybox-$PV.tar*
+tar -vxf $X/busybox-$PV.tar*
 cd busybox-$PV
 
 patch -p1 -i $X/busybox-1.12.2-getopt.patch
@@ -47,9 +48,9 @@ bb_disable	"CONFIG_INSTALL_APPLET_SCRIPT_WRAPPERS"
 bb_disable	"CONFIG_INSTALL_APPLET_DONT"
 
 CC=gcc
-make CC="$CC" oldconfig
-make CC="$CC"
-make CC="$CC" install
+colormake CC="$CC" oldconfig V=2
+colormake CC="$CC" V=2
+colormake CC="$CC" install V=2
 
 cd $D/ffp
 rm bin/busybox

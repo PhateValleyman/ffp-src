@@ -8,11 +8,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 for p in $X/patches/bash*-???; do
 	patch -p0 -i $p
@@ -33,8 +34,8 @@ CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS_RPATH" \
 	--without-bash-malloc \
 	--with-installed-readline
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 # remove bashbug
 rm -f $D/ffp/bin/bashbug

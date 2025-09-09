@@ -8,11 +8,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd vim73
 for p in $X/patches/$PV.???; do
 	patch -p0 -i $p || true
@@ -33,8 +34,8 @@ LDFLAGS="$FFP_LDFLAGS" \
 	--disable-gui \
 	--with-features=huge
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 # create a default config file
 mkdir -p $D/ffp/etc

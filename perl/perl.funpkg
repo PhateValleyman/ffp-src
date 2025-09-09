@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 # perl has a lot of hardcoded /usr paths. Sedding them all
@@ -64,8 +65,8 @@ export PATH=$W/bin:$PATH
 	-Dlddlflags="-shared -O2 $FFP_LDFLAGS" \
 	-Dccdlflags="-Wl,-E $FFP_LDFLAGS"
 
-yes '' | make
-make DESTDIR=$D install
+yes '' | colormake
+colormake DESTDIR=$D install V=2
 
 # api docs
 rm -rfv $D$mandir/man3

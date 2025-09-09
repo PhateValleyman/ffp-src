@@ -7,16 +7,17 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 cat $X/builddefs.h >builddefs.h
 
-make LDFLAGS="$FFP_LDFLAGS"
+colormake LDFLAGS="$FFP_LDFLAGS" V=2
 
 mkdir -p $D/ffp/sbin 
 install -m 0755 vsftpd $D/ffp/sbin

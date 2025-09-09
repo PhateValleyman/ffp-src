@@ -7,13 +7,14 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 b=$D/ffp/lib/$PN-$PV
 
 cd $W
-tar xf $X/$PN-$PV*.t*
+tar -vxf $X/$PN-$PV*.t*
 cd $PN-$PV*
 
 # perl interpreter is /ffp/bin/perl
@@ -42,7 +43,7 @@ INC="-I$D/ffp/include $(perl -e "map { print \" -I$W\$_\" } @INC;")"
 # ---> separate package
 if false; then
 cd $W
-tar xf $X/ffmpeg-*.tar.bz2
+tar -vxf $X/ffmpeg-*.tar.bz2
 cd ffmpeg-*
 LDFLAGS="$FFP_LDFLAGS" \
 ./configure \
@@ -72,14 +73,14 @@ LDFLAGS="$FFP_LDFLAGS" \
         --enable-demuxer=matroska --enable-demuxer=mov --enable-demuxer=mpegps --enable-demuxer=mpegts --enable-demuxer=mpegvideo \
         --enable-protocol=file
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 fi
 
 # libmediascan
 # needs db
 cd $W
-tar xf $X/libmediascan-*.tar.gz
+tar -vxf $X/libmediascan-*.tar.gz
 cd libmediascan-*
 LDFLAGS="$FFP_LDFLAGS -L$D/ffp/lib" \
 	./configure \
@@ -88,8 +89,8 @@ LDFLAGS="$FFP_LDFLAGS -L$D/ffp/lib" \
 	--prefix=/ffp \
 	--mandir=$mandir
 
-make
-make DESTDIR=$D install
+colormake V=2
+colormake DESTDIR=$D install V=2
 
 # libmediascan perl module
 #INCLUDE="$D/ffp/include:/ffp/include" 
@@ -97,8 +98,8 @@ cd bindings/perl
 eval INCLUDE="/ffp/include:$D/ffp/include" \
 	perl $INC Makefile.PL INSTALLDIRS=vendor \
 	--with-static
-make
-make DESTDIR=$W install
+colormake V=2
+colormake DESTDIR=$W install V=2
 
 
 # remaining perl modules
@@ -106,7 +107,7 @@ export PERL5LIB=$W/lib/perl5
 for i in $(cat $X/perl-modules); do
 	a=$(ls $X/CPAN/$i-*.tar.gz)
 	cd $W
-	tar xf $a
+	tar -vxf $a
 
 	n=$(basename $a .tar.gz)
         cd $n || cd ${n%-*}
@@ -121,8 +122,8 @@ for i in $(cat $X/perl-modules); do
 
         yes '' | eval perl $INC Makefile.PL INSTALLDIRS=vendor
 	#yes '' | eval perl $INC Makefile.PL INSTALL_BASE=$W
-        make
-        make DESTDIR=$W install
+        colormake
+        colormake DESTDIR=$W install
 done
 
 # move files to final location

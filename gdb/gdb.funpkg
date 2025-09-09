@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 # CBLFS:
@@ -31,8 +32,8 @@ sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
 	--disable-gdbtk \
 	--disable-sim
 
-make LDFLAGS="$FFP_LDFLAGS"
-make DESTDIR=$D install
+colormake LDFLAGS="$FFP_LDFLAGS" V=2
+colormake DESTDIR=$D install V=2
 
 mkdir -p $D/install
 cp $X/{DESCR,HOMEPAGE} $D/install/

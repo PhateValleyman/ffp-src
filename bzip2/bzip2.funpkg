@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 # sed from DIY
@@ -26,11 +27,11 @@ sed -i 's@ -o@ $(LDFLAGS)&@' Makefile-libbz2_so
 
 export LDFLAGS="$FFP_LDFLAGS"
 
-make -f Makefile-libbz2_so
-make clean
-make
+colormake -f Makefile-libbz2_so V=2
+colormake clean V=2
+colormake V=2
 
-make PREFIX=$D/ffp install
+colormake PREFIX=$D/ffp install V=2
 
 cp bzip2-shared $D/ffp/bin/bzip2
 cp -a libbz2.so* $D/ffp/lib

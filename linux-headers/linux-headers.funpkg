@@ -9,14 +9,15 @@ PR=1
 linux_arch=arm
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/linux-$PV.tar*
+tar -vxf $X/linux-$PV.tar*
 cd linux-*
 
-make ARCH=$linux_arch INSTALL_HDR_PATH=$D/ffp headers_install
+colormake ARCH=$linux_arch INSTALL_HDR_PATH=$D/ffp headers_install V=2
 
 cd $D
 makepkg $PN $PV $PR

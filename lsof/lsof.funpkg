@@ -6,21 +6,22 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN*.tar*
+tar -vxf $X/$PN*.tar*
 PV=$(ls -d lsof_* | egrep -o '[0-9.]*')
 cd lsof*
-tar xf lsof_*_src.tar
+tar -vxf lsof_*_src.tar
 cd lsof_*_src
 
 ./Configure -n linux
 
 sed -i "/^CFGL/ s@\$@ ${FFP_LDFLAGS_RPATH}@" Makefile
 
-make
+colormake V=2
 
 mkdir -p $D/ffp/bin
 install -m 0755 -o root -g root lsof $D/ffp/bin

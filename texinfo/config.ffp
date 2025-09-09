@@ -1,20 +1,6 @@
 
-case "$FFP_ARCH" in
-	arm)
-		GNU_BUILD=arm-ffp-linux-uclibcgnueabi
-		;;
-	oarm)
-		GNU_BUILD=arm-ffp-linux-uclibc
-		;;
-	"")
-		echo "FFP_ARCH unset"
-		exit 1
-		;;
-	*)
-		echo "FFP_ARCH unknown"
-		exit 1
-		;;
-esac
+FFP_ARCH=arm
+GNU_BUILD=arm-ffp-linux-uclibcgnueabi
 
 GNU_HOST=$GNU_BUILD
 GNU_TARGET=$GNU_HOST
@@ -23,7 +9,7 @@ FFP_CFLAGS="-I/ffp/include -O2"
 FFP_LDFLAGS="-L/ffp/lib -Wl,-rpath,/ffp/lib"
 
 if [ ! -d "$TMPDIR" ]; then
-	TMPDIR=/tmp
+	TMPDIR=/ffp/tmp
 fi
 export TMPDIR
 

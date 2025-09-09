@@ -7,11 +7,12 @@ PR=1
 . ./config.ffp
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$PN-$PV.tar*
+tar -vxf $X/$PN-$PV.tar*
 cd $PN-$PV
 
 LDFLAGS="$FFP_LDFLAGS" \
@@ -23,9 +24,9 @@ LDFLAGS="$FFP_LDFLAGS" \
 	--infodir=$infodir \
 	--disable-nls
 
-make
+colormake V=2
 mkdir -p $D/ffp/bin
-make DESTDIR=$D install
+colormake DESTDIR=$D install V=2
 
 # api docs
 rm -rf $D$mandir/man3

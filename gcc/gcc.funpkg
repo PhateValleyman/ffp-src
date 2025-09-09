@@ -10,11 +10,12 @@ PR=1
 GCC_EXTRA_CONFIG="--with-float=soft"
 
 X=$(pwd)
-W=$(mktemp -t -d $PN.XXXXXX)
+mkdir -p $X/build
+W=$X/build
 D=$W/pkg
 
 cd $W
-tar xf $X/$A
+tar -vxf $X/$A
 cd $PN-*
 
 for p in $X/patches/*.patch; do
@@ -57,13 +58,13 @@ CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
 
 #	--disable-libstdcxx-pch
 
-make \
+colormake \ V=2
 	STAGE1_CFLAGS="-O" \
 	BOOT_CFLAGS="-O" \
 	BOOT_LDFLAGS="-Wl,-rpath,/ffp/lib" \
 	LDFLAGS_FOR_TARGET="-Wl,-rpath,/ffp/lib"
 
-make DESTDIR=$D install
+colormake DESTDIR=$D install V=2
 ln -s gcc $D/ffp/bin/cc
 
 mkdir -p $D/install
