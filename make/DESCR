@@ -1,0 +1,8 @@
+make - GNU make utility to maintain groups of programs
+
+Make is a tool which controls the generation of executables and other
+non-source files of a program from the program's source files. GNU
+Make has many powerful features for use in makefiles, beyond what
+other Make versions have.
+
+Homepage: http://www.gnu.org/software/make/

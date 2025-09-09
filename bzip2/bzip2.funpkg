@@ -1,0 +1,45 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+
+# sed from DIY
+sed -i \
+	-e "s, \$(PREFIX)/man, \$(PREFIX)${mandir#/ffp},g" \
+        -e '/ln .*PREFIX/s,$(PREFIX)/bin/,,' \
+        Makefile
+
+# use LDFLAGS from environment
+sed -i 's@^LDFLAGS=.*@#&@' Makefile
+sed -i 's@ -o@ $(LDFLAGS)&@' Makefile-libbz2_so 
+
+export LDFLAGS="$FFP_LDFLAGS"
+
+make -f Makefile-libbz2_so
+make clean
+make
+
+make PREFIX=$D/ffp install
+
+cp bzip2-shared $D/ffp/bin/bzip2
+cp -a libbz2.so* $D/ffp/lib
+ln -s $(basename $(find $D/ffp/lib -type f -name libbz2.so.\*)) $D/ffp/lib/libbz2.so
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

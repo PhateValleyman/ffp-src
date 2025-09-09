@@ -1,0 +1,9 @@
+busybox - The Swiss Army Knife of Embedded Linux
+
+BusyBox combines tiny versions of many common UNIX utilities into a
+single small executable.
+
+This package installs basic networking utilities such as ping,
+ifconfig, etc.
+
+Homepage: http://www.busybox.net/

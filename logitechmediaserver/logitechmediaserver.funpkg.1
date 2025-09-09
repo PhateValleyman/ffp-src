@@ -1,0 +1,143 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.t* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+b=$D/ffp/lib/$PN-$PV
+
+cd $W
+tar xf $X/$PN-$PV*.t*
+cd $PN-$PV*
+
+# perl interpreter is /ffp/bin/perl
+for f in $(find -name \*.pl); do
+    sed -i "1 s,^#!/.*/perl,#!/ffp/bin/perl," $f
+done
+
+# remove arch-specific binaries
+rm -rvf Bin/MSWin* Bin/i386* Bin/darwin* Bin/powerpc*
+
+# install files
+mkdir -p $b
+cp -r * $b
+
+mkdir -p $b/{Cache,Logs,prefs}
+
+pushd $D
+chmod a+r  $(find -type f)
+chmod a+rx $(find -type d)
+popd
+
+# need perl include paths
+INC=$(perl -e "map { print \" -I$W\$_\" } @INC;")
+
+
+# ffmpeg
+cd $W
+tar xf $X/ffmpeg-*.tar.bz2
+cd ffmpeg-*
+LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--prefix=/ffp \
+	--disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver \
+        --disable-avdevice --enable-pic \
+        --disable-amd3dnow --disable-amd3dnowext --disable-mmx2 --disable-sse --disable-ssse3 --disable-avx \
+        --disable-armv5te --disable-armv6 --disable-armv6t2 --disable-armvfp --disable-iwmmxt --disable-mmi --disable-neon \
+        --disable-altivec \
+        --disable-vis \
+        --enable-zlib --disable-bzlib \
+        --disable-everything --enable-swscale \
+        --enable-decoder=h264 --enable-decoder=mpeg1video --enable-decoder=mpeg2video \
+        --enable-decoder=mpeg4 --enable-decoder=msmpeg4v1 --enable-decoder=msmpeg4v2 \
+        --enable-decoder=msmpeg4v3 --enable-decoder=vp6f --enable-decoder=vp8 \
+        --enable-decoder=wmv1 --enable-decoder=wmv2 --enable-decoder=wmv3 --enable-decoder=rawvideo \
+        --enable-decoder=mjpeg --enable-decoder=mjpegb --enable-decoder=vc1 \
+        --enable-decoder=aac --enable-decoder=ac3 --enable-decoder=dca --enable-decoder=mp3 \
+        --enable-decoder=mp2 --enable-decoder=vorbis --enable-decoder=wmapro --enable-decoder=wmav1 --enable-decoder=flv \
+        --enable-decoder=wmav2 --enable-decoder=wmavoice \
+        --enable-decoder=pcm_dvd --enable-decoder=pcm_s16be --enable-decoder=pcm_s16le \
+        --enable-decoder=pcm_s24be --enable-decoder=pcm_s24le \
+        --enable-decoder=ass --enable-decoder=dvbsub --enable-decoder=dvdsub --enable-decoder=pgssub --enable-decoder=xsub \
+        --enable-parser=aac --enable-parser=ac3 --enable-parser=dca --enable-parser=h264 --enable-parser=mjpeg \
+        --enable-parser=mpeg4video --enable-parser=mpegaudio --enable-parser=mpegvideo --enable-parser=vc1 \
+        --enable-demuxer=asf --enable-demuxer=avi --enable-demuxer=flv --enable-demuxer=h264 \
+        --enable-demuxer=matroska --enable-demuxer=mov --enable-demuxer=mpegps --enable-demuxer=mpegts --enable-demuxer=mpegvideo \
+        --enable-protocol=file
+
+make
+make DESTDIR=$D install
+
+
+# libmediascan
+# needs db
+cd $W
+tar xf $X/libmediascan-*.tar.gz
+cd libmediascan-*
+LDFLAGS="$FFP_LDFLAGS -L$D/ffp/lib" \
+	./configure \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--prefix=/ffp \
+	--mandir=$mandir
+
+make
+make DESTDIR=$D install
+
+# libmediascan perl module
+cd bindings/perl
+eval perl $INC Makefile.PL INSTALLDIRS=vendor \
+	--with-static 
+make
+make DESTDIR=$W install
+
+
+# remaining perl modules
+export PERL5LIB=$W/lib/perl5
+for i in $(cat $X/perl-modules); do
+	a=$(ls $X/CPAN/$i-*.tar.gz)
+	cd $W
+	tar xf $a
+
+	n=$(basename $a .tar.gz)
+        cd $n || cd ${n%-*}
+        #_echo $n
+        #echo $n >>$D/install/DESCR
+
+        if [ -r $X/CPAN/$n.patch ]; then
+                patch -p1 -i $X/CPAN/$n.patch
+        fi
+
+        sed -i 's,/usr/,/ffp/,g' Makefile.PL
+
+        yes '' | eval perl $INC Makefile.PL INSTALLDIRS=vendor
+	#yes '' | eval perl $INC Makefile.PL INSTALL_BASE=$W
+        make
+        make DESTDIR=$W install
+done
+
+# move files to final location
+#vv=$(basename /ffp/lib/perl5/site_perl/*)
+#v=${vv%.*}
+#a=$(basename /ffp/lib/perl5/site_perl/*/*)
+#mkdir $D$base/arch/$v
+#rsync -amv --include='*/' --include='*.so' --include='*.bundle' --include='autosplit.ix' --exclude='*' $M/lib/perl5/*/auto $DD/arch/$v/$a/
+
+cd $W/ffp/lib/perl5/vendor_perl/*
+perlv=$(pwd | xargs basename | cut -d. -f1,2)
+mkdir -p $b/CPAN/arch/$perlv
+tar cf - $(find -name '*.so' -o -name '*.bundle' -o -name 'autosplit.ix') \
+	| tar xvf - -C $b/CPAN/arch/$perlv/
+
+
+# done	
+cd $D
+makepkg $PN $PV $PR
+
+

@@ -1,0 +1,30 @@
+-- Thomas E. Dickey <dickey@invisible-island.net> 04 Apr 2011
+
+The files in this directory are patches against ncurses 5.9 release.
+
+Patches are named according to the date on which I generate them, e.g.,
+
+	ncurses-5.9-yyyymmdd.patch.gz
+	
+I usually upload a new patch file on Saturday evenings.  If a serious error
+is found, I will make a patch that resolves that problem.
+
+At times (generally to mark a relatively stable point), I create a rollup
+patch, which consists of all changes from the release through the current date. 
+If you have the rollup patch, you will not need the corresponding weekly patch
+-- it's included.
+
+Rollup patches are a shell script.  There are two flavors, e.g.,
+
+	patch-5.9-yyyymmdd.sh.gz
+	ncurses-5.9-yyyymmdd-patch.sh.bz2
+
+The "patch-XX.sh.gz" files are the original form, and may use a mixture of
+uudecode, tar and patch to extract new files or update existing ones.
+
+The "ncurses-XXX.sh.bz2" files use only the patch program; the downloads are
+slightly smaller.
+
+Once I have uploaded a rollup patch, I remove older weekly patches.  The weekly
+patches are of interest mainly to people who are mirroring development trees
+with ncurses.

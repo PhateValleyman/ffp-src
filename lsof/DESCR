@@ -1,0 +1,6 @@
+lsof - LiSt Open Files
+
+The free, open-source, Unix administrative tool lsof (for LiSt Open
+Files) displays information about files open to Unix processes.
+
+Homepage: http://people.freebsd.org/~abe/

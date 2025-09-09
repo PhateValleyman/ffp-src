@@ -1,0 +1,7 @@
+libpcap - Packet Capture library
+
+The Packet Capture library provides a high level interface to packet
+capture systems. All packets on the network, even those destined for
+other hosts, are accessible through this mechanism.
+
+Homepage: http://www.tcpdump.org/

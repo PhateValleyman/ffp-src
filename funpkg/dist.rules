@@ -1,0 +1,20 @@
+
+# never overwrite start scripts, but keep current permissions
+%/ffp/start/*.sh
+
+# save old run scripts
+!~/ffp/run.d/**
+
+# always update dist.rules
+!/ffp/etc/funpkg/dist.rules
+
+# special config files
+!/ffp/etc/{protocols,services}
+!/ffp/etc/{ffp-version,ffp-arch}
+
+# protect all remaining config files
+/ffp/etc/**
+
+# dont change the shell
+?/ffp/bin/sh
+

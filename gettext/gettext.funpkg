@@ -1,0 +1,44 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+
+patch -p1 -i $X/gettext-0.18.1.1-uclibc-spawn.patch
+
+LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--infodir=$infodir \
+	--mandir=$mandir \
+	--docdir=$docdir/$PN-$PV
+
+make
+make DESTDIR=$D install
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+# api docs
+rm -rf $D$mandir/man3
+
+# too much
+rm -rf $D$docdir #/$PN-$PV/examples
+rm -rf $D/ffp/share/gettext
+
+cd $D
+makepkg $PN $PV $PR
+
+

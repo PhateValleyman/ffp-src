@@ -1,0 +1,43 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+
+LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--mandir=$mandir \
+	--infodir=$infodir \
+	--disable-nls \
+	--with-libiconv=/ffp \
+	--with-libgcrypt-dir=/ffp \
+	--with-ssl-dir=/ffp \
+	--with-bdb=/ffp 
+
+make
+make DESTDIR=$D install
+
+rm -rf $D$mandir/man3
+
+mkdir -p $D/ffp/start
+install -m 0644 $X/start-afpd.sh $D/ffp/start/afpd.sh
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+

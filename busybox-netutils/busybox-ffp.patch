@@ -1,0 +1,72 @@
+diff -ur busybox.orig/include/libbb.h busybox/include/libbb.h
+--- busybox.orig/include/libbb.h	2011-05-05 09:16:48.000000000 +0200
++++ busybox/include/libbb.h	2011-05-05 09:26:34.000000000 +0200
+@@ -1658,9 +1658,10 @@
+ extern const char bb_busybox_exec_path[];
+ /* util-linux manpage says /sbin:/bin:/usr/sbin:/usr/bin,
+  * but I want to save a few bytes here */
+-extern const char bb_PATH_root_path[]; /* "PATH=/sbin:/usr/sbin:/bin:/usr/bin" */
++extern const char bb_PATH_root_path[];
++extern const char bb_PATH_path[];
+ #define bb_default_root_path (bb_PATH_root_path + sizeof("PATH"))
+-#define bb_default_path      (bb_PATH_root_path + sizeof("PATH=/sbin:/usr/sbin"))
++#define bb_default_path      (bb_PATH_path + sizeof("PATH"))
+ 
+ extern const int const_int_0;
+ extern const int const_int_1;
+@@ -1687,12 +1688,12 @@
+  * use bb_default_login_shell and following defines.
+  * If you change LIBBB_DEFAULT_LOGIN_SHELL,
+  * don't forget to change increment constant. */
+-#define LIBBB_DEFAULT_LOGIN_SHELL  "-/bin/sh"
++#define LIBBB_DEFAULT_LOGIN_SHELL  "-/ffp/bin/sh"
+ extern const char bb_default_login_shell[];
+ /* "/bin/sh" */
+ #define DEFAULT_SHELL              (bb_default_login_shell+1)
+ /* "sh" */
+-#define DEFAULT_SHELL_SHORT_NAME   (bb_default_login_shell+6)
++#define DEFAULT_SHELL_SHORT_NAME   (bb_default_login_shell+10)
+ 
+ /* The following devices are the same on all systems.  */
+ #define CURRENT_TTY "/dev/tty"
+diff -ur busybox.orig/init/init.c busybox/init/init.c
+--- busybox.orig/init/init.c	2011-05-05 09:16:48.000000000 +0200
++++ busybox/init/init.c	2011-05-05 09:19:54.000000000 +0200
+@@ -992,7 +992,7 @@
+ 	/* Make sure environs is set to something sane */
+ 	putenv((char *) "HOME=/");
+ 	putenv((char *) bb_PATH_root_path);
+-	putenv((char *) "SHELL=/bin/sh");
++	putenv((char *) "SHELL=/ffp/bin/sh");
+ 	putenv((char *) "USER=root"); /* needed? why? */
+ 
+ 	if (argv[1])
+diff -ur busybox.orig/libbb/messages.c busybox/libbb/messages.c
+--- busybox.orig/libbb/messages.c	2011-05-05 09:16:49.000000000 +0200
++++ busybox/libbb/messages.c	2011-05-05 09:25:19.000000000 +0200
+@@ -40,8 +40,9 @@
+ /* util-linux manpage says /sbin:/bin:/usr/sbin:/usr/bin,
+  * but I want to save a few bytes here. Check libbb.h before changing! */
+ const char bb_PATH_root_path[] ALIGN1 =
+-	"PATH=/sbin:/usr/sbin:/bin:/usr/bin" BB_ADDITIONAL_PATH;
+-
++	"PATH=/ffp/sbin:/ffp/bin:/sbin:/bin:/usr/sbin:/usr/bin" BB_ADDITIONAL_PATH;
++const char bb_PATH_path[] ALIGN1 =
++    "PATH=/ffp/bin:/bin:/usr/bin" BB_ADDITIONAL_PATH;
+ 
+ const int const_int_1 = 1;
+ /* explicitly = 0, otherwise gcc may make it a common variable
+diff -ur busybox.orig/networking/telnetd.c busybox/networking/telnetd.c
+--- busybox.orig/networking/telnetd.c	2011-05-05 09:16:49.000000000 +0200
++++ busybox/networking/telnetd.c	2011-05-05 09:39:13.000000000 +0200
+@@ -85,8 +85,8 @@
+ } FIX_ALIASING;
+ #define G (*(struct globals*)&bb_common_bufsiz1)
+ #define INIT_G() do { \
+-	G.loginpath = "/bin/login"; \
+-	G.issuefile = "/etc/issue.net"; \
++	G.loginpath = "/ffp/bin/login"; \
++	G.issuefile = "/ffp/etc/issue.net"; \
+ } while (0)
+ 
+ 

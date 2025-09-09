@@ -1,0 +1,33 @@
+--- tcp_wrappers_7.6.orig/Makefile	2011-03-05 11:10:59.000000000 +0100
++++ tcp_wrappers_7.6/Makefile	2011-03-05 11:15:58.000000000 +0100
+@@ -44,7 +44,7 @@ what:
+ #REAL_DAEMON_DIR=/usr/etc
+ #
+ # SysV.4 Solaris 2.x OSF AIX
+-REAL_DAEMON_DIR=/usr/sbin
++#REAL_DAEMON_DIR=/usr/sbin
+ #
+ # BSD 4.4
+ #REAL_DAEMON_DIR=/usr/libexec
+@@ -72,6 +72,9 @@ REAL_DAEMON_DIR=/usr/sbin
+ # HP-UX SCO Unicos
+ #REAL_DAEMON_DIR=/etc/...
+ 
++# Fonz Fun-Plug
++REAL_DAEMON_DIR=/ffp/sbin
++
+ # End of mandatory section
+ ##########################
+ 
+@@ -148,6 +151,11 @@ netbsd:
+ 	LIBS= RANLIB=ranlib ARFLAGS=rv AUX_OBJ= NETGROUP= TLI= \
+ 	EXTRA_CFLAGS="-DSYS_ERRLIST_DEFINED -DINET6 -Dss_family=__ss_family -Dss_len=__ss_len" VSYSLOG= all
+ 
++ffp:
++	@make REAL_DAEMON_DIR=$(REAL_DAEMON_DIR) STYLE=$(STYLE) \
++	LIBS= RANLIB=ranlib ARFLAGS=rv AUX_OBJ=weak_symbols.o \
++	NETGROUP= TLI= EXTRA_CFLAGS="-fPIC -DPIC -D_REENTRANT -DHAVE_STRERROR -DBROKEN_SO_LINGER -DINET6=1 -DHAVE_WEAKSYMS" all
++
+ linux:
+ 	@make REAL_DAEMON_DIR=$(REAL_DAEMON_DIR) STYLE=$(STYLE) \
+ 	LIBS="-lnsl" RANLIB=ranlib ARFLAGS=rv AUX_OBJ=weak_symbols.o \

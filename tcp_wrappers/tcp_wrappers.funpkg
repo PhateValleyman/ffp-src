@@ -1,0 +1,40 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN_*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/${PN}_$PV.tar*
+cd tcp_wrappers-$PV
+sh extract-and-patch.sh
+cd tcp_wrappers_$PV
+
+patch -p1 -i $X/tcp_wrappers-7.6-ffp.patch
+
+make LIBS="$FFP_LDFLAGS" ffp
+
+mkdir -p $D/ffp/sbin
+install -m 0755 safe_finger tcpd tcpdchk tcpdmatch try-from $D/ffp/sbin
+
+mkdir -p $D/ffp/include
+install -m 0644 tcpd.h $D/ffp/include
+
+mkdir -p $D/ffp/lib
+install -m 0644 libwrap.a $D/ffp/lib
+
+#_doc BLURB CHANGES DISCLAIMER README*
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

@@ -1,0 +1,46 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*p[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--sysconfdir=/ffp/etc/ssh \
+	--mandir=$mandir \
+	--with-md5-passwords \
+	--with-privsep-path=/ffp/var/lib/sshd \
+	--with-tcp-wrappers \
+	ac_cv_path_NROFF=$(which nroff) \
+	LDFLAGS="$FFP_LDFLAGS" \
+	LD="gcc"
+
+make
+make DESTDIR=$D install
+
+#_doc CREDITS ChangeLog INSTALL LICENCE OVERVIEW \
+#	README README.privsep TODO \
+#	WARNING.RNG
+
+mkdir -p $D/ffp/start
+install -m 0644 $X/start-sshd.sh $D/ffp/start/sshd.sh
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

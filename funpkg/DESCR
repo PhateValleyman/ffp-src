@@ -1,0 +1,10 @@
+funpkg - Install, upgrade, and remove ffp packages
+
+funpkg is the default tool to install additional binary packages. The
+package further includes slacker, a tool to install packages directly
+from the Internet or a local package repository. Finally, the newconf
+tool can be used to check, accept, and discard newly installed
+configuration files.
+
+Homepage: http://www.inreto.de/
+

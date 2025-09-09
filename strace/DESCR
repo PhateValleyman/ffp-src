@@ -1,0 +1,7 @@
+strace - trace system calls and signals
+
+strace is a system call tracer, i.e. a debugging tool which prints out
+a trace of all the system calls made by a another process/program.
+
+Homepage: http://sourceforge.net/projects/strace/
+

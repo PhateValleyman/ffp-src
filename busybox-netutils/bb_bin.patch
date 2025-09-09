@@ -1,0 +1,72 @@
+--- busybox-1.18.3.orig/applets/install.sh	2011-03-01 14:25:02.000000000 +0100
++++ busybox-1.18.3/applets/install.sh	2011-03-01 14:54:22.000000000 +0100
+@@ -24,6 +24,10 @@
+ 	*)               echo "Unknown install option: $2"; exit 1;;
+ esac
+ 
++if [ -z "$bb_bin" ]; then
++	bb_bin="busybox"
++fi
++
+ if [ -n "$DO_INSTALL_LIBS" ] && [ "$DO_INSTALL_LIBS" != "n" ]; then
+ 	# get the target dir for the libs
+ 	# assume it starts with lib
+@@ -43,8 +47,8 @@
+ 	done
+ fi
+ 
+-if [ "$cleanup" = "1" ] && [ -e "$prefix/bin/busybox" ]; then
+-	inode=`ls -i "$prefix/bin/busybox" | awk '{print $1}'`
++if [ "$cleanup" = "1" ] && [ -e "$prefix/bin/$bb_bin" ]; then
++	inode=`ls -i "$prefix/bin/$bb_bin" | awk '{print $1}'`
+ 	sub_shell_it=`
+ 	cd "$prefix"
+ 	for d in usr/sbin usr/bin sbin bin; do
+@@ -59,38 +63,38 @@
+ 	exit 0
+ fi
+ 
+-rm -f $prefix/bin/busybox || exit 1
++rm -f $prefix/bin/$bb_bin || exit 1
+ mkdir -p $prefix/bin || exit 1
+-install -m 755 busybox $prefix/bin/busybox || exit 1
++install -m 755 busybox $prefix/bin/$bb_bin || exit 1
+ 
+ for i in $h; do
+ 	appdir=`dirname $i`
+ 	mkdir -p $prefix/$appdir || exit 1
+ 	if [ "$scriptwrapper" = "y" ]; then
+ 		if [ "$swrapall" != "y" ] && [ "$i" = "/bin/sh" ]; then
+-			ln $linkopts busybox $prefix$i || exit 1
++			ln $linkopts $bb_bin $prefix$i || exit 1
+ 		else
+ 			rm -f $prefix$i
+-			echo "#!/bin/busybox" > $prefix$i
++			echo "#!/bin/$bb_bin" > $prefix$i
+ 			chmod +x $prefix/$i
+ 		fi
+ 		echo "	$prefix$i"
+ 	else
+ 		if [ "$2" = "--hardlinks" ]; then
+-			bb_path="$prefix/bin/busybox"
++			bb_path="$prefix/bin/$bb_bin"
+ 		else
+ 			case "$appdir" in
+ 			/)
+-				bb_path="bin/busybox"
++				bb_path="bin/$bb_bin"
+ 			;;
+ 			/bin)
+-				bb_path="busybox"
++				bb_path="$bb_bin"
+ 			;;
+ 			/sbin)
+-				bb_path="../bin/busybox"
++				bb_path="../bin/$bb_bin"
+ 			;;
+ 			/usr/bin|/usr/sbin)
+-				bb_path="../../bin/busybox"
++				bb_path="../../bin/$bb_bin"
+ 			;;
+ 			*)
+ 			echo "Unknown installation directory: $appdir"

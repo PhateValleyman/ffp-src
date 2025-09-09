@@ -1,0 +1,41 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+A=$(ls icu4c-*-src.t*)
+PV=$(echo $A | egrep -o '[0-9]_[0-9]_[0-9]' | tr _ .)
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$A
+cd icu/source
+
+CFLAGS="$CFLAGS -DU_USING_ICU_NAMESPACE=0"
+
+CFLAGS="$CFLAGS" \
+CXXFLAGS="$CFLAGS" \
+LDFLAGS="$FFP_LDFLAGS" \
+./runConfigureICU \
+	Linux \
+	--prefix=/ffp \
+	--enable-static \
+	--with-data-packaging=archive
+
+make
+make DESTDIR=$D install
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+#_doc ../*license* ../readme.html
+
+
+cd $D
+makepkg $PN $PV $PR
+
+

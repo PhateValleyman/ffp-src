@@ -1,0 +1,92 @@
+#!/ffp/bin/sh -xe
+
+PN=procps
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+#
+# procps
+#
+cd $W
+tar xf $X/procps-*.tar*
+cd procps-*
+
+patch -p1 -i $X/procps-3.2.7-ffp.diff
+# LFS patches:
+patch -p1 -i $X/procps-3.2.8-fix_HZ_errors-1.patch
+patch -p1 -i $X/procps-3.2.8-watch_unicode-1.patch
+
+make LDFLAGS="$FFP_LDFLAGS"
+make DESTDIR=$D ldconfig=: install
+
+#
+# psmisc
+#
+cd $W
+tar xf $X/psmisc-*.tar*
+cd psmisc-*
+
+case "$FFP_ARCH" in
+oarm)
+	sed -i.orig '/^@WANT_PEEKFD_ARM_TRUE/ d' src/Makefile.in
+	;;
+esac
+
+LDFLAGS="$FFP_LDFLAGS" \
+	./configure \
+        --build=$GNU_BUILD \
+	--host=$GNU_HOST \
+        --prefix=/ffp \
+        --mandir=$mandir --infodir=$infodir \
+        --disable-nls \
+        --exec-prefix=""
+
+make
+make DESTDIR=$D install
+
+# psmisc prefers to install to /bin, fix it
+mkdir -p $D/ffp/bin
+mv $D/bin/* $D/ffp/bin/
+rmdir $D/bin
+rm -f $D/ffp/bin/pstree.x11
+ln -s killall $D/ffp/bin/pidof
+
+
+#
+# procinfo
+#
+cd $W
+tar xf $X/procinfo-*.tar*
+cd procinfo-*
+
+patch -p1 -i $X/procinfo-18-fixes.patch
+
+mkdir -p $D/ffp/bin
+
+make LDFLAGS="$FFP_LDFLAGS"
+install -m 0755 procinfo $D/ffp/bin/
+
+sed '1 s,#!.*,#!/ffp/bin/perl,' lsdev.pl >$D/ffp/bin/lsdev
+chmod 755 $D/ffp/bin/lsdev
+
+sed '1 s,#!.*,#!/ffp/bin/perl,' socklist.pl >$D/ffp/bin/socklist
+chmod 755 $D/ffp/bin/socklist
+
+mkdir -p $D$mandir/man8
+cp procinfo.8 lsdev.8 socklist.8 $D$mandir/man8
+
+
+# done
+mkdir -p $D/install/
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

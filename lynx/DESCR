@@ -1,0 +1,9 @@
+lynx - a browser for the World Wide Web
+
+Lynx is a fully-featured World Wide Web (WWW) client.  It will display
+Hypertext Markup Language (HTML) documents containing links to files
+on the local system, as well as files on remote systems running http,
+gopher, ftp, wais, nntp, finger, or cso/ph/qi servers, and services
+accessible via logins to telnet, tn3270 or rlogin accounts.
+
+Homepage: http://lynx.isc.org/

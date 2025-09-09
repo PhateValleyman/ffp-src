@@ -1,0 +1,48 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+
+mv pkgsrc/pkgtools/rcorder/files     rcorder
+mv pkgsrc/pkgtools/libnbcompat/files rcorder/libnbcompat
+
+cd rcorder/libnbcompat
+patch -p1 -i $X/libnbcompat-Makefile.patch
+
+./configure \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--prefix=/ffp
+
+make
+
+cd ..
+CFLAGS="-O2 -Ilibnbcompat" \
+LIBS="libnbcompat/libnbcompat.a" \
+./configure \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--prefix=/ffp \
+	--mandir=$mandir
+
+make
+make DESTDIR=$D install
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+
+

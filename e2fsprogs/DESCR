@@ -1,0 +1,7 @@
+e2fsprogs - Ext2/3/4 Filesystem Utilities
+
+The e2fsprogs packages provides the filesystem utilities for use with the ext2
+filesystem. It also supports the ext3 and ext4 filesystems.
+
+Homepage: http://e2fsprogs.sourceforge.net/
+

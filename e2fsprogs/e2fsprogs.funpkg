@@ -1,0 +1,56 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+extra_config=
+case "$FFP_ARCH" in
+	oarm)
+		extra_config="$extra_config --disable-tls"
+		;;
+esac
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+mkdir build
+cd build
+
+LDFLAGS="$FFP_LDFLAGS -lblkid -luuid" \
+PKG_CONFIG=/ffp/bin/true \
+../configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--mandir=$mandir \
+	--infodir=$infodir \
+	--disable-nls \
+	--enable-elf-shlibs \
+	--disable-libblkid \
+	--disable-libuuid \
+	--disable-uuidd \
+	--disable-fsck \
+	$extra_config
+
+make
+#	LIBUUID="-luuid" STATIC_LIBUUID="-luuid" \
+#	LIBBLKID="-lblkid" STATIC_LIBBLKID="-lblkid"
+
+make DESTDIR=$D install install-libs
+
+rm -rf $D$mandir/man3
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

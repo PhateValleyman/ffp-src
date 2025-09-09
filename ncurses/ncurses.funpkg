@@ -1,0 +1,69 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+zcat $X/ncurses.mkhashsize.diff.gz| patch -p1
+for p in $X/patches/$PN-$PV-????????.patch.gz; do
+	zcat $p | patch -p1
+done
+
+PATCHLEVEL=$(awk '$1 == "NCURSES_PATCH" {print $3}' dist.mk)
+PV=${PV}_$PATCHLEVEL
+
+CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--infodir=$infodir \
+	--mandir=$mandir \
+	--disable-nls \
+	--with-shared \
+	--enable-widec \
+	--without-debug \
+	--without-ada \
+	--without-tests \
+	--disable-big-core
+
+make
+make DESTDIR=$D install
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/ncurses.html
+cd $D/ffp/lib
+for lib in curses ncurses form panel menu; do
+        echo "INPUT(-l${lib}w)" >lib${lib}.so
+        ln -s lib${lib}w.a lib${lib}.a
+done
+ln -s libncurses++w.a libncurses++.a || true
+
+echo "INPUT(-lncursesw)" >libcursesw.so
+ln -sf libncurses.so libcurses.so
+ln -sf libncursesw.a libcursesw.a
+ln -sf libncurses.a  libcurses.a
+
+cd $D/ffp/include
+ln -s ncursesw/curses.h .
+ln -s ncursesw/ncurses.h .
+ln -s ncursesw/term.h
+
+# api docs
+rm -rfv $D$mandir/man3
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+
+cd $D
+makepkg $PN $PV $PR
+

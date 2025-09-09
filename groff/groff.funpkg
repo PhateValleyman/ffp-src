@@ -1,0 +1,42 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-*
+
+LDFLAGS="$FFP_LDFLAGS" \
+PAGE=A4 \
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--mandir=$mandir \
+	--infodir=$infodir \
+	--disable-nls \
+	--docdir=$docdir/$P
+
+make
+    
+mkdir -p $D/ffp
+make prefix=$D/ffp install
+
+cd $D/ffp/bin
+ln -s eqn geqn
+ln -s tbl gtbl
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+

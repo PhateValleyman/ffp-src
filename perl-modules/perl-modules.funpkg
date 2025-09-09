@@ -1,0 +1,47 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(/ffp/bin/perl -v | egrep -o '[0-9]\.[0-9]*\.[0-9]*')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+b=$D/ffp/lib/$PN-$PV
+
+cd $W
+
+# need perl include paths
+INC="-I$D/ffp/include $(perl -e "map { print \" -I$W\$_\" } @INC;")"
+
+# remaining perl modules
+export PERL5LIB=$D/ffp/lib/perl5
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+for i in XML-Parser; do
+	a=$(ls $X/$i-*.tar.gz)
+	n=$(basename $a .tar.gz)
+
+	cd $W
+	tar xf $a
+        cd $n || cd ${n%-*}
+        echo $n >>$D/install/DESCR
+
+        sed -i 's,/usr/,/ffp/,g' Makefile.PL
+
+        yes '' | eval perl $INC Makefile.PL INSTALLDIRS=vendor
+        make
+        make DESTDIR=$D install
+done
+
+rm -rf $D$mandir/man3
+
+cd $D
+makepkg $PN $PV $PR
+
+

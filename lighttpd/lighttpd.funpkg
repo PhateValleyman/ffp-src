@@ -1,0 +1,46 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-*
+
+LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--prefix=/ffp \
+	--libdir=/ffp/lib/$P \
+	--program-prefix="" \
+	--with-openssl \
+	--with-pcre \
+	--with-zlib
+
+make
+make DESTDIR=$D install
+
+mkdir -p $D/ffp/etc/examples
+cp $X/lighttpd.conf $X/lighttpd.conf-with-php $D/ffp/etc/examples/
+
+mkdir -p $D/ffp/start
+install -m 0644 $X/start-lighttpd.sh $D/ffp/start/lighttpd.sh
+install -m 0644 $X/start-kickwebs.sh $D/ffp/start/kickwebs.sh
+
+#_doc README AUTHORS COPYING doc/
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

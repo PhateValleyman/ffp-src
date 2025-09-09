@@ -1,0 +1,14 @@
+--- nfs-utils-1.2.3/utils/mount/Makefile.in.orig	2011-03-05 11:32:07.000000000 +0100
++++ nfs-utils-1.2.3/utils/mount/Makefile.in	2011-03-05 11:32:23.000000000 +0100
+@@ -275,10 +275,7 @@ pdfdir = @pdfdir@
+ prefix = @prefix@
+ program_transform_name = @program_transform_name@
+ psdir = @psdir@
+-
+-# These binaries go in /sbin (not /usr/sbin), and that cannot be
+-# overriden at config time.
+-sbindir = /sbin
++sbindir = ${exec_prefix}/sbin
+ sharedstatedir = @sharedstatedir@
+ srcdir = @srcdir@
+ startstatd = @startstatd@

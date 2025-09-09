@@ -1,0 +1,37 @@
+#!/ffp/bin/sh -xe
+
+PN=mpfr
+PV=3.1.0
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+mkdir ../build
+cd ../build
+
+CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
+../mpfr-*/configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--disable-nls \
+	--enable-shared \
+	--enable-static \
+	--with-gmp=/ffp
+
+make
+make DESTDIR=$D install
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+

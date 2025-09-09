@@ -1,0 +1,6 @@
+libev - high-performance event loop
+
+libev is a full-featured and high-performance event loop that is
+loosely modelled after libevent, but without its limitations and bugs.
+
+Homepage: http://software.schmorp.de/pkg/libev.html

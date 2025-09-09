@@ -1,0 +1,42 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.t* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tgz
+cd portmap_$PV
+patch -p1 -i $X/portmap-6.0-no-wrap.patch
+
+make CC=gcc LDFLAGS="$FFP_LDFLAGS" DAEMON_UID=0 DAEMON_GID=0
+
+mkdir -p $D/ffp/sbin
+install -m 0755 pmap_dump pmap_set $D/ffp/sbin
+install -m 0755 portmap $D/ffp/sbin/rpc.portmap
+
+mkdir -p $D$mandir/man8
+install -m 0644 portmap.man $D$mandir/man8/pmap_dump.8
+install -m 0644 portmap.8 pmap_set.8 $D$mandir/man8
+
+
+mkdir -p $D/ffp/start
+install -m 0644 $X/start-portmap.sh $D/ffp/start/portmap.sh
+
+d=$D$docdir/$PN-$PV
+mkdir -p $d
+cp BLURBv5 CHANGES README* $d/
+
+mkdir -p $D/install
+cp $X/{HOMEPAGE,DESCR} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

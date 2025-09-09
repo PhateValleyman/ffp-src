@@ -1,0 +1,37 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=3.7.9
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/sqlite-autoconf-*.tar*
+cd sqlite-*
+
+LDFLAGS="$FFP_LDFLAGS" \
+CFLAGS="-O2 -g -DSQLITE_SECURE_DELETE -DSQLITE_ENABLE_UNLOCK_NOTIFY=1" \
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--enable-threadsafe \
+	--enable-readline \
+	--enable-dynamic-extensions
+
+make
+make DESTDIR=$D install
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+#_doc README INSTALL
+
+cd $D
+makepkg $PN $PV $PR
+
+

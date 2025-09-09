@@ -1,0 +1,5 @@
+libpng-1.5 has incompatible changes. 
+
+E.g., perl module Image::Scale 0.06 does not build correctly, because
+png_memcpy is no longer defined (in pngcong header).
+

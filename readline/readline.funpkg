@@ -1,0 +1,41 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PATCHLEVEL=$(cat PATCHLEVEL)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+for p in $X/patches/readline*-???; do
+	patch -p0 -i $p
+done
+
+sed -i "s@^SHLIB_LIBS=@&-lncursesw ${FFP_LDFLAGS}@" support/shobj-conf
+
+CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST
+
+make
+make DESTDIR=$D install
+
+# api docs
+rm -rf $D$mandir/man3
+rm -rf $D/ffp/share/readline
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV.$PATCHLEVEL $PR
+

@@ -1,0 +1,10 @@
+NTP - The Network Time Protocol
+
+The Network Time Protocol (NTP) is widely used to synchronize a
+computer to Internet time servers or other sources, such as a radio or
+satellite receiver or telephone modem service. It can also be used as
+a server for dependent clients. It provides accuracies typically less
+than a millisecond on LANs and up to a few milliseconds on WANs.
+
+Homepage: http://www.ntp.org/
+

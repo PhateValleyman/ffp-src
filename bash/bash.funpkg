@@ -1,0 +1,51 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PATCHLEVEL=$(cat PATCHLEVEL)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+for p in $X/patches/bash*-???; do
+	patch -p0 -i $p
+done
+
+#  /ffp/etc/profile
+sed -i "/SYS_PROFILE/ s,/etc/,/ffp&," pathnames.h.in
+
+#  /ffp/etc/inputrc
+sed -i "/SYS_INPUTRC/ s,/etc/,/ffp&," lib/readline/rlconf.h
+
+CFLAGS="$FFP_CFLAGS" LDFLAGS="$FFP_LDFLAGS_RPATH" \
+	./configure \
+	--prefix=/ffp \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--disable-nls \
+	--without-bash-malloc \
+	--with-installed-readline
+
+make
+make DESTDIR=$D install
+
+# remove bashbug
+rm -f $D/ffp/bin/bashbug
+rm -f $D$mandir/*/bashbug.*
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+ln -s bash $D/ffp/bin/sh
+
+cd $D
+makepkg $PN $PV.$PATCHLEVEL $PR
+
+

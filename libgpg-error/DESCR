@@ -1,0 +1,7 @@
+libgpg-error - helper library to provide a common set of error codes and descriptions
+
+Libgpg-error is helper library used by a couple of other projects to provide a
+common set of error codes and descriptions. 
+
+Homepage: http://www.gnupg.org/
+

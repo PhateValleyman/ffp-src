@@ -1,0 +1,110 @@
+#!/ffp/bin/sh
+
+export PATH=/ffp/bin:$PATH
+
+
+if [ -z "$ARCH" ]; then
+	if [ -n "$FFP_ARCH" ]; then
+		ARCH=$FFP_ARCH
+	elif [ -n "$MACHTYPE" ]; then
+		case "$MACHTYPE" in
+		arm-*-uclibc)
+			ARCH=oarm
+			;;
+		arm-*-uclibcgnueabi)
+			ARCH=arm
+			;;
+		*)
+			echo "Unknown MACHTYPE ($MACHTYPE)"
+			;;
+		esac
+	fi
+	if [ -z "$ARCH" ]; then
+		echo "Unknown arch (set ARCH, FFP_ARCH or MACHTYPE)"
+		exit 1
+	fi
+fi
+
+if [ ! -d "$PKGDIR" ]; then
+	PKGDIR=/tmp
+fi
+
+usage() {
+	cat <<EOF
+Usage: makepkg NAME VER REV
+EOF
+	exit 1
+}
+
+_compress_man() {
+	local f g i
+        if [ -d .$mandir ]; then
+                for f in $(find .$mandir/man* -type f -a ! -name "*.gz" 2>/dev/null); do
+			if [ ! -e "$f" ]; then
+				continue
+			fi
+			if [ "$(stat -c '%h' $f)" == 1 ]; then
+				gzip -9 "$f"
+			else
+				i=$(stat -c '%i' "$f")
+                                gzip -9c "$f" >"$f.gz"
+				rm -f "$f"
+				for g in $(find .$mandir/man* -type f -inum $i); do
+                                        ln "$f.gz" "$g.gz"
+                                        rm -f "$g"
+                                done
+                        fi
+                done
+                for f in $(find .$mandir/man* -type l -a ! -name "*.gz" 2>/dev/null); do
+                        g=$(readlink "$f")
+                        ln -s "$g.gz" "$f.gz"
+                        rm "$f"
+                done
+        fi
+}
+
+_compress_info() {
+        if [ -d .$infodir ]; then
+                rm -f .$infodir/dir;
+                for f in $(find .$infodir -type f ! -name "*.gz"); do
+                        #_print "gzip $f"
+                        gzip -9 "$f"
+                done
+        fi
+}
+
+_strip() {
+        local strip=${STRIP:-strip}
+        for f in $(find "$@" -type f | file -f - 2>/dev/null | grep ': *ELF .*executable'    | cut -d: -f1); do
+                #echo "$strip --strip-unneeded $f"
+                $strip --strip-unneeded "$f"
+        done
+        for f in $(find "$@" -type f | file -f - 2>/dev/null | grep ': *ELF .*shared object' | cut -d: -f1); do
+                #echo "$strip --strip-debug $f"
+                $strip --strip-debug "$f"
+        done
+}
+
+
+
+mandir=/ffp/share/man
+infodir=/ffp/share/info
+
+if [ $# -ne 3 ]; then
+	usage
+fi
+PN="$1"
+PV="$2"
+PR="$3"
+
+PKG=$PKGDIR/$PN-$PV-$ARCH-$PR.txz
+echo "Creating $PKG ..."
+
+_compress_man
+_compress_info
+_strip
+
+bsdtar cf - . | xz -c >$PKG
+
+
+

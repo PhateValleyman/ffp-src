@@ -1,0 +1,44 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls busybox-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/busybox-$PV.tar*
+cd busybox-*
+for p in $X/$S-*.patch; do
+	[ -r "$p" ] && patch -p1 -i $p
+done
+
+patch -p1 -i $X/bb_bin.patch
+patch -p1 -i $X/busybox-ffp.patch
+
+cat $X/config >.config
+yes '' | make oldconfig
+make
+
+bb_bin=$PN make CONFIG_PREFIX=$D/ffp install
+rm -f $D/ffp/bin/bbconfig
+
+mkdir -p $D/ffp/start
+install -m 0644 $X/start-inetd.sh $D/ffp/start/inetd.sh
+install -m 0644 $X/start-telnetd.sh $D/ffp/start/telnetd.sh
+
+mkdir -p $D/ffp/etc/examples
+cp $X/inetd.conf $D/ffp/etc/examples/
+
+mkdir -p $D$mandir/man1
+cp docs/busybox.1 $D$mandir/man1/$PN.1
+#_doc AUTHORS LICENSE README
+
+cd $D
+makepkg $PN $PV $PR
+
+

@@ -1,0 +1,70 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+
+#patch -p1 -i $X/001-no-getgrouplist.patch
+#patch -p1 -i $X/nfs-utils-1.1.0-CITI_NFS4_ALL-1.patch
+#patch -p1 -i $X/nfs-utils-1.1.0-index.patch
+#patch -p1 -i $X/nfs-utils-1.1.0-no-tools.patch
+#patch -p1 -i $X/svc_socket.patch
+
+patch -p1 -i $X/nfs-utils-1.2.3-sbindir.patch
+
+# Change hardcoded paths in statd:
+# pidfile, sm-notify
+sed -i \
+	-e '/pidfile =/ s,=.*,= "/ffp/var/run/rpc.statd.pid";,' \
+	-e 's,/usr/sbin/,/ffp/sbin/,' \
+	utils/statd/statd.c
+
+# no libio.h
+sed -i 's,^#include <libio.h>,,' support/include/sockaddr.h
+
+LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--build=$GNU_BUILD \
+	--host=$GNU_HOST \
+	--prefix=/ffp \
+	--mandir=$mandir \
+	--infodir=$infodir \
+	--disable-nls \
+	--with-statedir=/ffp/var/lib/nfs \
+	--enable-nfsv3 \
+	--enable-nfsv4=no \
+	--enable-nfsv41=no \
+	--enable-gss=no \
+	--enable-tirpc=no
+
+make
+make DESTDIR=$D install
+rm -rf $D/var
+
+mkdir -p $D/ffp/var/lib/nfs/
+
+mkdir -p $D/ffp/start
+install -m 0644 $X/start-nfsd.sh $D/ffp/start/nfsd.sh
+
+d=$D$docdir/$PN-$PV
+mkdir -p $d
+cp COPYING NEWS README $d/
+
+mkdir -p $D/install
+cp $X/{HOMEPAGE,DESCR} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+
+

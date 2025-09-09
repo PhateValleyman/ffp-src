@@ -1,0 +1,7 @@
+libarchive - library and tools for reading and writing various archive formats
+
+The libarchive package contains a C library and command-line tools for reading
+and writing tar, cpio, zip, ISO, and other archive formats.
+
+Homepage: http://code.google.com/p/libarchive/
+

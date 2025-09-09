@@ -1,0 +1,7 @@
+libjpeg - The Independent JPEG Group's JPEG software
+
+This package contains C software to implement JPEG image encoding, decoding,
+and transcoding.  JPEG (pronounced "jay-peg") is a standardized compression
+method for full-color and gray-scale images.
+
+Homepage: http://www.ijg.org/

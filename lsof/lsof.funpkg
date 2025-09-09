@@ -1,0 +1,39 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN*.tar*
+PV=$(ls -d lsof_* | egrep -o '[0-9.]*')
+cd lsof*
+tar xf lsof_*_src.tar
+cd lsof_*_src
+
+./Configure -n linux
+
+sed -i "/^CFGL/ s@\$@ ${FFP_LDFLAGS_RPATH}@" Makefile
+
+make
+
+mkdir -p $D/ffp/bin
+install -m 0755 -o root -g root lsof $D/ffp/bin
+
+mkdir -p $D$mandir/man8
+install -m 0644 -o root -g root lsof.8 $D$mandir/man8
+
+#_doc 00* ../00* ../README*
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

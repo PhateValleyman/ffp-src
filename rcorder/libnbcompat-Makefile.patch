@@ -1,0 +1,13 @@
+--- libnbcompat/Makefile.in.orig	2011-02-24 21:39:11.653199323 +0100
++++ libnbcompat/Makefile.in	2011-02-24 21:39:21.606811252 +0100
+@@ -64,10 +64,6 @@
+ 
+ WITH_DB=	@WITH_DB@
+ 
+-.if ${WITH_DB} == "yes"
+-.  include "${.CURDIR}/db/Makefile.inc"
+-.endif
+-
+ LINK=		$(CCLD) $(CFLAGS) $(LDFLAGS) -o $@
+ COMPILE=	$(CC) $(CPPFLAGS) $(CFLAGS)
+ 

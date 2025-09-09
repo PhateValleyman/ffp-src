@@ -1,0 +1,62 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls busybox-*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/busybox-$PV.tar*
+cd busybox-$PV
+
+patch -p1 -i $X/busybox-1.12.2-getopt.patch
+patch -p1 -i $X/busybox-1.12.2-lineedit.patch
+patch -p1 -i $X/http_host.patch
+patch -p1 -i $X/http_auth_passwd-1.patch
+patch -p1 -i $X/http_auth_passwd-2.patch
+
+bb_set() {
+    sed -i "s,^$1=.*,$1=\"$2\"," .config
+}
+bb_enable() {
+    sed -i "s,^# $1 is not set,$1=y," .config
+}
+bb_disable() {
+    sed -i "s,^$1=y,# $1 is not set," .config
+}
+bb_remove() {
+    sed -i \
+        -e "/^$1=y/d" \
+        -e "/^# $1 is not set/d" \
+        .config
+}
+
+cp $X/config .config
+bb_set		"CONFIG_PREFIX" "$D/ffp"
+bb_enable	"CONFIG_INSTALL_NO_USR"
+
+# install hard-links
+bb_disable	"CONFIG_INSTALL_APPLET_SYMLINKS"
+bb_enable	"CONFIG_INSTALL_APPLET_HARDLINKS"
+bb_disable	"CONFIG_INSTALL_APPLET_SCRIPT_WRAPPERS"
+bb_disable	"CONFIG_INSTALL_APPLET_DONT"
+
+CC=gcc
+make CC="$CC" oldconfig
+make CC="$CC"
+make CC="$CC" install
+
+cd $D/ffp
+rm bin/busybox
+rmdir bin
+
+cd $D
+makepkg $PN $PV $PR
+
+
+

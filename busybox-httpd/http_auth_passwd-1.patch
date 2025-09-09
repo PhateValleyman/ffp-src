@@ -1,0 +1,86 @@
+--- busybox-1.12.2.orig_http_host/networking/httpd.c	2008-11-14 17:03:21 +0100
++++ busybox-1.12.2/networking/httpd.c	2008-11-14 19:11:59 +0100
+@@ -1666,6 +1666,55 @@ static int checkPermIP(void)
+ }
+ 
+ #if ENABLE_FEATURE_HTTPD_BASIC_AUTH
++
++static int auth_passwd_check(const char *user_and_passwd, const char *unencrypted)
++{
++	char *username;
++        char *cp;
++        struct passwd *pw;
++        int r = 0;
++        
++        username = xstrdup(user_and_passwd); /* dup it and remove ":..."  */
++        cp = strchr(username, ':');
++        if (cp)
++                *cp = 0;
++        pw = getpwnam(username);
++        free(username);
++
++        if (pw && pw->pw_passwd[0] != '!' && pw->pw_passwd[0] != '*') {
++
++/* copied from libbb/correct_password.c */
++                char *encrypted;
++                const char *correct;
++
++#if ENABLE_FEATURE_SHADOWPASSWDS
++                /* Using _r function to avoid pulling in static buffers */
++                struct spwd spw;
++                char buffer[256];
++#endif
++
++                correct = pw->pw_passwd;
++
++#if ENABLE_FEATURE_SHADOWPASSWDS
++                if ((correct[0] == 'x' || correct[0] == '*') && !correct[1]) {
++                        /* getspnam_r may return 0 yet set result to NULL.
++                         * At least glibc 2.4 does this. Be extra paranoid here. */
++                        struct spwd *result = NULL;
++                        r = getspnam_r(pw->pw_name, &spw, buffer, sizeof(buffer), &result);
++                        correct = (r || !result) ? "aa" : result->sp_pwdp;
++                }
++#endif
++
++                if (!correct[0]) /* empty password field? */
++                        return 1;
++
++                encrypted = pw_encrypt(unencrypted, correct, 1);
++                r = (strcmp(encrypted, correct) == 0);
++                free(encrypted);
++        }
++        return r;
++}
++
+ /*
+  * Config file entries are of the form "/<path>:<user>:<passwd>".
+  * If config file has no prefix match for path, access is allowed.
+@@ -1734,6 +1783,27 @@ static int check_user_passwd(const char 
+ 			}
+ 		}
+ 
++		if (ENABLE_FEATURE_HTTPD_AUTH_PASSWD) {
++			char *passwd;
++			
++			/* if password is '+', check against system password files */
++			passwd = strchr(cur->after_colon, ':');
++			if (passwd && passwd[1] == '+' && passwd[2] == 0) {
++				int user_len_p1;
++
++				passwd++;
++				user_len_p1 = passwd - cur->after_colon;
++				/* comparing "user:" */
++				if (strncmp(cur->after_colon, user_and_passwd, user_len_p1) != 0) {
++					continue;
++				}
++				if (auth_passwd_check(user_and_passwd, user_and_passwd + user_len_p1)) {
++					goto set_remoteuser_var; /* Ok */
++				}
++				continue;	
++			}
++		}
++
+ 		/* Comparing plaintext "user:pass" in one go */
+ 		if (strcmp(cur->after_colon, user_and_passwd) == 0) {
+  set_remoteuser_var:

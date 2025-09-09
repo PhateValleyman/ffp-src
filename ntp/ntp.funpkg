@@ -1,0 +1,55 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9]p[0-9]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-*
+
+# make tickadj compile on uClibc
+patch -p1 -i $X/ntp-4.2.4_p5-adjtimex.patch
+patch -p1 -i $X/ntp-4.2.4_p7-nano.patch
+
+# fix ntp.conf path
+sed -i.bak "/CONFIG_FILE/ s@/etc/ntp.conf@/ffp&@" \
+	include/ntp_config.h ntpdate/ntptime_config.c
+
+# fixes taken from buildroot/packages/ntp/ntp.mk
+#sed -i.bak "s,^#if.*__GLIBC__.*_BSD_SOURCE.*$$,#if 0," ntpd/refclock_pcf.c
+#sed -i.bak '/[[:space:](]index[[:space:]]*(/s/[[:space:]]*index[[:space:]]*(/ strchr(/g' libisc/*.c arlib/sample.c
+#sed -i.bak '/[[:space:](]rindex[[:space:]]*(/s/[[:space:]]*rindex[[:space:]]*(/ strrchr(/g' ntpd/*.c
+#$(SED) 's/\(^#[[:space:]]*include[[:space:]]*<sys\/var.h>\)/\/\/ \1/' $(NTP_DIR)/util/tickadj.c
+
+LDFLAGS="$FFP_LDFLAGS" \
+./configure \
+	--build=$GNU_BUILD --host=$GNU_HOST \
+	--prefix=/ffp \
+	--infodir=$infodir --mandir=$mandir \
+	--disable-nls
+
+make
+make DESTDIR=$D install
+
+mkdir -p $D/ffp/etc/examples
+cp $X/ntp.conf $D/ffp/etc/examples/
+
+mkdir -p $D/ffp/start
+install -m 0644 $X/start-ntpd.sh $D/ffp/start/ntpd.sh
+
+#_doc COPYRIGHT NEWS README.* TODO WHERE-TO-START
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

@@ -1,0 +1,44 @@
+#!/ffp/bin/sh -xe
+
+PN=$(basename $0 .funpkg)
+PV=$(ls $PN-*.tar* | egrep -o '[0-9][0-9.]*[0-9a-z]')
+PR=1
+
+. ./config.ffp
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+
+# fix MANDIR
+sed -i "/^MANDIR/ s@=.*@=$mandir@" Makefile.org
+
+sed -i "/^my \$shared_ldflag =/ s@=.*@= \"$FFP_LDFLAGS\";@" Configure
+
+$CONFIG_SHELL ./config \
+        --prefix=/ffp \
+        --openssldir=/ffp/etc/ssl \
+        no-idea no-rc5 shared
+
+make
+
+mkdir -p $D/ffp/etc/ssl
+make INSTALL_PREFIX=$D install
+
+cp -r certs $D/ffp/etc/ssl
+
+# no api docs
+rm -vrf $D$mandir/man3
+
+#_doc CHANGES CHANGES.SSLeay FAQ INSTALL LICENSE NEWS README README.ENGINE
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

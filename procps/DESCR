@@ -1,0 +1,8 @@
+procps - /proc file system utilities
+
+The utilities in the procps package show information about running processes.
+This package includes the procps, psmisc, and procinfo source packages.   
+
+procps Homepage: http://procps.sourceforge.net/
+psmisc Homepage: http://sourceforge.net/projects/psmisc/
+

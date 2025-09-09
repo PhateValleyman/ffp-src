@@ -1,0 +1,7 @@
+infozip - Info-ZIP's zip and unzip utilities
+
+This packages includes zip, a compressor/archiver for creating and
+modifying zipfiles, and unzip for extracting and viewing files in .zip
+archives.
+
+Homepage: http://www.info-zip.org/

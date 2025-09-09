@@ -1,0 +1,36 @@
+#!/ffp/bin/sh -xe
+
+if [ "$FFP_ARCH" != "oarm" ]; then
+	echo "this package for oarm only"
+	exit 1
+fi
+
+PN=$(basename $0 .funpkg)
+PV=$(ls linux-libc-headers*.tar* | egrep -o '[0-9][0-9.]*[0-9]')
+PR=1
+
+. ./config.ffp
+
+linux_arch=arm
+
+X=$(pwd)
+W=$(mktemp -t -d $PN.XXXXXX)
+D=$W/pkg
+
+cd $W
+tar xf $X/$PN-$PV.tar*
+cd $PN-$PV
+chown -R root:root *
+
+cd include
+mkdir -p $D/ffp/include
+cp -a linux scsi sound $D/ffp/include
+cp -a asm-$linux_arch $D/ffp/include/asm
+
+mkdir -p $D/install
+cp $X/{DESCR,HOMEPAGE} $D/install/
+
+cd $D
+makepkg $PN $PV $PR
+
+

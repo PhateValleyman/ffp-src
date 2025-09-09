@@ -1,0 +1,17 @@
+diff -u Font-FreeType-0.03.orig/FreeType.xs Font-FreeType-0.03/FreeType.xs
+--- Font-FreeType-0.03.orig/FreeType.xs	2011-04-19 16:53:13.000000000 +0200
++++ Font-FreeType-0.03/FreeType.xs	2011-04-19 16:54:45.000000000 +0200
+@@ -805,7 +805,8 @@
+             char_code = FT_Get_First_Char(face, &glyph_idx);
+             while (glyph_idx) {
+                 if (glyph_idx == glyph->index) {
+-                    RETVAL = newSVuv((UV) glyph->char_code = char_code);
++                    glyph->char_code = char_code;
++                    RETVAL = newSVuv((UV) glyph->char_code);
+                     break;
+                 }
+                 char_code = FT_Get_Next_Char(face, char_code, &glyph_idx);
+Common subdirectories: Font-FreeType-0.03.orig/blib and Font-FreeType-0.03/blib
+Common subdirectories: Font-FreeType-0.03.orig/examples and Font-FreeType-0.03/examples
+Common subdirectories: Font-FreeType-0.03.orig/lib and Font-FreeType-0.03/lib
+Common subdirectories: Font-FreeType-0.03.orig/t and Font-FreeType-0.03/t

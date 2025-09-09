@@ -1,0 +1,5 @@
+libiconv - character set conversion library
+
+This library provides an iconv() implementation.
+
+Homepage: http://www.gnu.org/software/libiconv/

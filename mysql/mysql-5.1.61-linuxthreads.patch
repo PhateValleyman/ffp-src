@@ -1,0 +1,20 @@
+diff -ur a/sql/signal_handler.cc b/sql/signal_handler.cc
+--- a/sql/signal_handler.cc	2011-12-16 20:05:59.000000000 +0100
++++ b/sql/signal_handler.cc	2012-01-19 20:38:35.000000000 +0100
+@@ -131,6 +131,7 @@
+     "Hope that's ok; if not, decrease some variables in the equation.\n\n");
+ 
+ #if defined(HAVE_LINUXTHREADS)
++#define UNSAFE_DEFAULT_LINUX_THREADS 200
+   if (sizeof(char*) == 4 && thread_count > UNSAFE_DEFAULT_LINUX_THREADS)
+   {
+     my_safe_printf_stderr(
+@@ -141,7 +142,7 @@
+       "yourself, LinuxThreads is quite likely to steal "
+       "a part of the global heap for\n"
+       "the thread stack. Please read "
+-      "http://dev.mysql.com/doc/mysql/en/linux-installation.html\n\n"
++      "http://dev.mysql.com/doc/mysql/en/linux-installation.html\n\n",
+       thread_count);
+   }
+ #endif /* HAVE_LINUXTHREADS */

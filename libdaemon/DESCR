@@ -1,0 +1,6 @@
+libdaemon - C library that eases the writing of UNIX daemons
+
+libdaemon is a lightweight C library that eases the writing of UNIX daemons.
+
+Homepage: http://0pointer.de/lennart/projects/libdaemon/
+
