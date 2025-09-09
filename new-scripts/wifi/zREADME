@@ -1,0 +1,2 @@
+nohup ./wireless_tools.sh >> wireless_tools.log 2>&1 &
+nohup ./wpa-supplicant.sh >> wpa-supplicant.log 2>&1 &

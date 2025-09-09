@@ -1,0 +1,38 @@
+From 10fe779dd24e3809070b5b634214a9c7d8b11814 Mon Sep 17 00:00:00 2001
+From: uros <uros@138bc75d-0d04-0410-961f-82ee72b054a4>
+Date: Thu, 13 Mar 2014 18:34:47 +0000
+Subject: [PATCH] * regex.c (bzero) [!_LIBC]: Define without coma expression. (regerror): Cast the call to memcpy to (void) to avoid unused value warnings.
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@208553 138bc75d-0d04-0410-961f-82ee72b054a4
+
+diff --git a/libiberty/regex.c b/libiberty/regex.c
+index c11f330..cc9acdc 100644
+--- a/libiberty/regex.c
++++ b/libiberty/regex.c
+@@ -151,7 +151,7 @@ char *realloc ();
+ #    include <string.h>
+ #    ifndef bzero
+ #     ifndef _LIBC
+-#      define bzero(s, n)	(memset (s, '\0', n), (s))
++#      define bzero(s, n)	memset (s, '\0', n)
+ #     else
+ #      define bzero(s, n)	__bzero (s, n)
+ #     endif
+@@ -8093,12 +8093,12 @@ regerror (int errcode, const regex_t *preg ATTRIBUTE_UNUSED,
+ #if defined HAVE_MEMPCPY || defined _LIBC
+ 	  *((char *) mempcpy (errbuf, msg, errbuf_size - 1)) = '\0';
+ #else
+-          memcpy (errbuf, msg, errbuf_size - 1);
++          (void) memcpy (errbuf, msg, errbuf_size - 1);
+           errbuf[errbuf_size - 1] = 0;
+ #endif
+         }
+       else
+-        memcpy (errbuf, msg, msg_size);
++        (void) memcpy (errbuf, msg, msg_size);
+     }
+ 
+   return msg_size;
+-- 
+1.7.1
+

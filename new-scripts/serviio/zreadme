@@ -1,0 +1,8 @@
+nohup ./libtiff.sh >>libtiff.log 2>&1 &
+nohup ./lcms.sh >>lcms.log 2>&1 &
+nohup ./jasper.sh >>jasper.log 2>&1 &
+nohup ./dcraw.sh >>dcraw.log 2>&1 &
+nohup ./serviio.sh >>serviio.log 2>&1 &
+nohup ./alsa-lib.sh >> alsa-lib.log 2>&1 &
+nohup ./openjdk.sh >>openjdk.log 2>&1 &
+nohup ./oracle-java8-installer.sh >> oracle-java8-installer.log 2>&1 &

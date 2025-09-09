@@ -1,0 +1,37 @@
+From e258a174da750f0368f1d72276f56b75a79e79cc Mon Sep 17 00:00:00 2001
+From: Bruno Haible <bruno@clisp.org>
+Date: Fri, 02 Sep 2011 19:34:29 +0000
+Subject: Fix "make check" failure when $(srcdir) != $(builddir).
+
+---
+diff --git a/ChangeLog b/ChangeLog
+index 522a90a..131d71c 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,10 @@
++2011-09-02  Bruno Haible  <bruno@clisp.org>
++
++	Fix "make check" failure when $(srcdir) != $(builddir).
++	* tests/Makefile.in (check): When $(srcdir) != ., temporarily copy
++	GB18030.IRREVERSIBLE.TXT into the build directory.
++	Reported by Christian Weisgerber <naddy@mips.inka.de>.
++
+ 2011-08-07  Bruno Haible  <bruno@clisp.org>
+ 
+ 	Ensure all HTML-formatted man pages are up-to-date.
+diff --git a/tests/Makefile.in b/tests/Makefile.in
+index 5af5c74..1720ce3 100644
+--- a/tests/Makefile.in
++++ b/tests/Makefile.in
+@@ -128,7 +128,9 @@ check : all table-from table-to ../src/iconv_no_i18n test-shiftseq test-to-wchar
+ 	$(srcdir)/check-stateless $(srcdir) CP936
+ 	$(CC) $(LDFLAGS) $(INCLUDES) $(CFLAGS) $(CPPFLAGS) $(srcdir)/gengb18030z.c ../srclib/libicrt.a -o gengb18030z && \
+ 	{ cat $(srcdir)/GB18030-BMP.TXT ; ./gengb18030z ; } | sort > GB18030.TXT && \
++	{ test $(srcdir) = . || cp $(srcdir)/GB18030.IRREVERSIBLE.TXT GB18030.IRREVERSIBLE.TXT; } && \
+ 	$(srcdir)/check-stateless . GB18030 && \
++	{ test $(srcdir) = . || $(RM) GB18030.IRREVERSIBLE.TXT; } && \
+ 	$(RM) -r gengb18030z@EXEEXT@ gengb18030z.dSYM GB18030.TXT
+ 	$(srcdir)/check-stateful $(srcdir) ISO-2022-CN
+ 	$(srcdir)/check-stateful $(srcdir) ISO-2022-CN-EXT
+--
+cgit v0.9.0.2

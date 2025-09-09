@@ -1,0 +1,2 @@
+chmod 775 /ffp/lib/libc.so
+libconv ir gettext pašalintas $lt_ld_extra iš configure

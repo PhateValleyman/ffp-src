@@ -1,0 +1,42 @@
+diff -rupN mc-4.8.15/configure.ac mc-4.8.15_static/configure.ac
+--- mc-4.8.15/configure.ac	2015-08-14 13:45:11.000000000 +0300
++++ mc-4.8.15_static/configure.ac	2016-03-04 15:01:18.140146990 +0200
+@@ -463,6 +463,14 @@ DX_PDF_FEATURE(OFF)
+ DX_PS_FEATURE(OFF)
+ DX_INIT_DOXYGEN(mc,doxygen.cfg,devel)
+ 
++dnl
++dnl Static build of the mc executable
++dnl (must come before glib checks)
++dnl
++AC_ARG_ENABLE([static-build],
++              [  --enable-static-build   Build statically linked mc executable])
++AM_CONDITIONAL(ENABLE_STATIC_BUILD, [test "$enable_static_build" = "yes"])
++
+ 
+ dnl ############################################################################
+ dnl Configure results
+diff -rupN mc-4.8.15/src/Makefile.am mc-4.8.15_static/src/Makefile.am
+--- mc-4.8.15/src/Makefile.am	2014-09-17 12:26:42.000000000 +0300
++++ mc-4.8.15_static/src/Makefile.am	2016-03-04 15:01:18.140146990 +0200
+@@ -1,3 +1,8 @@
++
++if ENABLE_STATIC_BUILD
++AM_LDFLAGS = -all-static
++endif
++
+ SUBDIRS = filemanager man2hlp vfs viewer
+ 
+ if USE_INTERNAL_EDIT
+diff -rupN mc-4.8.15/src/consaver/Makefile.am mc-4.8.15_static/src/consaver/Makefile.am
+--- mc-4.8.15/src/consaver/Makefile.am	2013-04-10 23:04:31.000000000 +0300
++++ mc-4.8.15_static/src/consaver/Makefile.am	2016-03-04 15:02:12.000174041 +0200
+@@ -1,3 +1,8 @@
++
++if ENABLE_STATIC_BUILD
++AM_LDFLAGS = -all-static
++endif
++
+ pkglibexecdir = $(libexecdir)/@PACKAGE@
+ 
+ pkglibexec_PROGRAMS = cons.saver

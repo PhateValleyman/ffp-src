@@ -1,0 +1,3 @@
+nohup ./liburiparser.sh >> liburiparser.log 2>&1 &
+nohup ./tvheadend.sh >> tvheadend.log 2>&1 &
+

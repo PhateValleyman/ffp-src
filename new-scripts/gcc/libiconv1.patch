@@ -1,0 +1,105 @@
+From f14f82d10e06f334bd932ebdcdc1b192be1db810 Mon Sep 17 00:00:00 2001
+From: Bruno Haible <bruno@clisp.org>
+Date: Mon, 28 Nov 2011 01:23:25 +0000
+Subject: Fix bug with error handling in UCS-2, UCS-4, UTF-32 decoders.
+
+---
+diff --git a/lib/ucs2.h b/lib/ucs2.h
+index 206b8cc..02c946f 100644
+--- a/lib/ucs2.h
++++ b/lib/ucs2.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001, 2008 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2008, 2011 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -32,7 +32,6 @@ ucs2_mbtowc (conv_t conv, ucs4_t *pwc, const unsigned char *s, int n)
+   int count = 0;
+   for (; n >= 2;) {
+     ucs4_t wc = (state ? s[0] + (s[1] << 8) : (s[0] << 8) + s[1]);
+-    s += 2; n -= 2; count += 2;
+     if (wc == 0xfeff) {
+     } else if (wc == 0xfffe) {
+       state ^= 1;
+@@ -42,8 +41,9 @@ ucs2_mbtowc (conv_t conv, ucs4_t *pwc, const unsigned char *s, int n)
+     } else {
+       *pwc = wc;
+       conv->istate = state;
+-      return count;
++      return count+2;
+     }
++    s += 2; n -= 2; count += 2;
+   }
+   conv->istate = state;
+   return RET_TOOFEW(count);
+diff --git a/lib/ucs4.h b/lib/ucs4.h
+index 00d08d2..ef9da5f 100644
+--- a/lib/ucs4.h
++++ b/lib/ucs4.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001, 2008 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2008, 2011 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -34,18 +34,18 @@ ucs4_mbtowc (conv_t conv, ucs4_t *pwc, const unsigned char *s, int n)
+     ucs4_t wc = (state
+                   ? s[0] + (s[1] << 8) + (s[2] << 16) + (s[3] << 24)
+                   : (s[0] << 24) + (s[1] << 16) + (s[2] << 8) + s[3]);
+-    s += 4; n -= 4; count += 4;
+     if (wc == 0x0000feff) {
+     } else if (wc == 0xfffe0000u) {
+       state ^= 1;
+     } else if (wc <= 0x7fffffff) {
+       *pwc = wc;
+       conv->istate = state;
+-      return count;
++      return count+4;
+     } else {
+       conv->istate = state;
+       return RET_SHIFT_ILSEQ(count);
+     }
++    s += 4; n -= 4; count += 4;
+   }
+   conv->istate = state;
+   return RET_TOOFEW(count);
+diff --git a/lib/utf32.h b/lib/utf32.h
+index bc579ae..91ab840 100644
+--- a/lib/utf32.h
++++ b/lib/utf32.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001, 2008 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2008, 2011 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -40,7 +40,6 @@ utf32_mbtowc (conv_t conv, ucs4_t *pwc, const unsigned char *s, int n)
+     ucs4_t wc = (state
+                   ? s[0] + (s[1] << 8) + (s[2] << 16) + (s[3] << 24)
+                   : (s[0] << 24) + (s[1] << 16) + (s[2] << 8) + s[3]);
+-    count += 4;
+     if (wc == 0x0000feff) {
+     } else if (wc == 0xfffe0000u) {
+       state ^= 1;
+@@ -48,13 +47,13 @@ utf32_mbtowc (conv_t conv, ucs4_t *pwc, const unsigned char *s, int n)
+       if (wc < 0x110000 && !(wc >= 0xd800 && wc < 0xe000)) {
+         *pwc = wc;
+         conv->istate = state;
+-        return count;
++        return count+4;
+       } else {
+         conv->istate = state;
+         return RET_SHIFT_ILSEQ(count);
+       }
+     }
+-    s += 4; n -= 4;
++    s += 4; n -= 4; count += 4;
+   }
+   conv->istate = state;
+   return RET_TOOFEW(count);
+--
+cgit v0.9.0.2

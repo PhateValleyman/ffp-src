@@ -1,0 +1,13 @@
+nohup ./libgpg-error.sh >> libgpg-error.log 2>&1 &
+nohup ./libgcrypt.sh >> libgcrypt.log 2>&1 &
+nohup ./libksba.sh >> libksba.log 2>&1 &
+nohup ./libassuan.sh >> libassuan.log 2>&1 &
+nohup ./npth.sh >> npth.log 2>&1 &
+nohup ./nettle.sh >> nettle.log 2>&1 &
+nohup ./libtasn1.sh >> libtasn1.log 2>&1 &
+#nohup ./p11-kit.sh >> p11-kit.log 2>&1 &
+# We will build wihout p11 support this time
+# needs serious look at p11+ca-certificates+gnutls
+nohup ./gnutls.sh >> gnutls.log 2>&1 &
+nohup ./gnupg.sh >> gnupg.log 2>&1 &
+nohup ./gpgme.sh >> gpgme.log 2>&1 &

@@ -1,0 +1,48 @@
+From 0ef76c43d739e436ad7f1cccd253cc5713d2d63d Mon Sep 17 00:00:00 2001
+From: Alan Modra <amodra@gmail.com>
+Date: Sat, 24 May 2014 22:40:11 +0930
+Subject: [PATCH] Localize varible to avoid warning
+
+	* ldlang.c (base): Move variable to..
+	* mri.c: ..here, and make static.
+	* ldlang.h (base): Delete declaration.
+index 7c076a2..b48a9b3 100644
+--- a/ld/ldlang.c
++++ b/ld/ldlang.c
+@@ -112,8 +112,6 @@ struct asneeded_minfo **asneeded_list_tail;
+     DEFINED() need to increment this at the start of the traversal.  */
+ int lang_statement_iteration = 0;
+ 
+-etree_type *base; /* Relocation base - or null */
+-
+ /* Return TRUE if the PATTERN argument is a wildcard pattern.
+    Although backslashes are treated specially if a pattern contains
+    wildcards, we do not consider the mere presence of a backslash to
+diff --git a/ld/ldlang.h b/ld/ldlang.h
+index 47cc4df..7d69c56 100644
+--- a/ld/ldlang.h
++++ b/ld/ldlang.h
+@@ -505,7 +505,6 @@ extern lang_output_section_statement_type *abs_output_section;
+ extern lang_statement_list_type lang_output_section_statement;
+ extern struct lang_input_statement_flags input_flags;
+ extern bfd_boolean lang_has_input_file;
+-extern etree_type *base;
+ extern lang_statement_list_type *stat_ptr;
+ extern bfd_boolean delete_output_file_on_failure;
+ 
+diff --git a/ld/mri.c b/ld/mri.c
+index 6db22a6..70d4e02 100644
+--- a/ld/mri.c
++++ b/ld/mri.c
+@@ -44,6 +44,8 @@ struct section_name_struct {
+ };
+ 
+ static unsigned int symbol_truncate = 10000;
++static etree_type *base; /* Relocation base - or null */
++
+ static struct section_name_struct *order;
+ static struct section_name_struct *only_load;
+ static struct section_name_struct *address;
+-- 
+1.7.1
+

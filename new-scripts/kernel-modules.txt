@@ -1,0 +1,3 @@
+Removed /ffp/include/scsi/scsi.h header, which conflicts with uClibc scsi.h header (gcc fails to compile)
+TODO:
+Add missing /ffp/include/linux/module.h and /ffp/include/linux/syscalls.h headers from zyxel GPL source?

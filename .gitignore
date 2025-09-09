@@ -292,5 +292,8 @@ inc/
 # cpanfile.snapshot
 
 
+default-scripts/*/build
+default-scripts/*/build/*
+
 */build
 */build/*

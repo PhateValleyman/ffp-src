@@ -1,0 +1,179 @@
+diff -rupN minidlna/clients.c minidlnanew/clients.c
+--- minidlna/clients.c	2013-12-09 20:36:37.190910793 +0000
++++ minidlnanew/clients.c	2013-12-09 20:53:42.381421518 +0000
+@@ -61,8 +61,8 @@ struct client_type_s client_types[] =
+ 	{ ESamsungSeriesB,
+ 	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE,
+ 	  "Samsung Series B",
+-	  "Samsung DTV DMR",
+-	  EModelName
++	  "SamsungWiselinkPro/1.0",
++	  EUserAgent
+ 	},
+ 
+ 	/* User-Agent: Panasonic MIL DLNA CP UPnP/1.0 DLNADOC/1.50 */
+diff -rupN minidlna/inotify.c minidlnanew/inotify.c
+--- minidlna/inotify.c	2013-12-09 20:36:37.210912182 +0000
++++ minidlnanew/inotify.c	2013-12-09 20:49:29.161297003 +0000
+@@ -328,6 +328,7 @@ inotify_insert_file(char * name, const c
+ 			if( !is_audio(path) &&
+ 			    !is_video(path) &&
+ 			    !is_playlist(path) )
++				return -1;
+ 			break;
+ 		case TYPE_AUDIO|TYPE_IMAGES:
+ 			if( !is_image(path) &&
+@@ -336,12 +337,14 @@ inotify_insert_file(char * name, const c
+ 				return -1;
+ 			break;
+ 		case TYPE_VIDEO:
+-			if( !is_video(path) )
++			if( !is_video(path) &&
++			    !is_playlist(path) )
+ 				return -1;
+ 			break;
+ 		case TYPE_VIDEO|TYPE_IMAGES:
+ 			if( !is_image(path) &&
+-			    !is_video(path) )
++			    !is_video(path) &&
++			    !is_playlist(path) )
+ 				return -1;
+ 			break;
+ 		case TYPE_IMAGES:
+@@ -555,9 +558,9 @@ inotify_remove_file(const char * path)
+ 		sql_exec(db, "DELETE from PLAYLISTS where ID = %lld", detailID);
+ 		sql_exec(db, "DELETE from DETAILS where ID ="
+ 		             " (SELECT DETAIL_ID from OBJECTS where OBJECT_ID = '%s$%llX')",
+-		         MUSIC_PLIST_ID, detailID);
++		         VIDEO_PLIST_ID, detailID);
+ 		sql_exec(db, "DELETE from OBJECTS where OBJECT_ID = '%s$%llX' or PARENT_ID = '%s$%llX'",
+-		         MUSIC_PLIST_ID, detailID, MUSIC_PLIST_ID, detailID);
++		         VIDEO_PLIST_ID, detailID, VIDEO_PLIST_ID, detailID);
+ 	}
+ 	else
+ 	{
+@@ -571,7 +574,7 @@ inotify_remove_file(const char * path)
+ 			for( i = 1; i <= rows; i++ )
+ 			{
+ 				/* If it's a playlist item, adjust the item count of the playlist */
+-				if( strncmp(result[i], MUSIC_PLIST_ID, strlen(MUSIC_PLIST_ID)) == 0 )
++				if( strncmp(result[i], VIDEO_PLIST_ID, strlen(VIDEO_PLIST_ID)) == 0 )
+ 				{
+ 					sql_exec(db, "UPDATE PLAYLISTS set FOUND = (FOUND-1) where ID = %d",
+ 					         atoi(strrchr(result[i], '$') + 1));
+diff -rupN minidlna/playlist.c minidlnanew/playlist.c
+--- minidlna/playlist.c	2013-12-09 20:36:37.230911963 +0000
++++ minidlnanew/playlist.c	2013-12-09 20:43:57.181127993 +0000
+@@ -144,7 +144,7 @@ fill_playlists()
+ 			continue;
+ 
+ 		DPRINTF(E_DEBUG, L_SCANNER, "Scanning playlist \"%s\" [%s]\n", plname, plpath);
+-		if( sql_get_int_field(db, "SELECT ID from OBJECTS where PARENT_ID = '"MUSIC_PLIST_ID"'"
++		if( sql_get_int_field(db, "SELECT ID from OBJECTS where PARENT_ID = '"VIDEO_PLIST_ID"'"
+ 		                          " and NAME = '%q'", plname) <= 0 )
+ 		{
+ 			detailID = GetFolderMetadata(plname, NULL, NULL, NULL, 0);
+@@ -152,7 +152,7 @@ fill_playlists()
+ 			             " (OBJECT_ID, PARENT_ID, DETAIL_ID, CLASS, NAME) "
+ 			             "VALUES"
+ 			             " ('%s$%llX', '%s', %lld, 'container.%s', '%q')",
+-			             MUSIC_PLIST_ID, plID, MUSIC_PLIST_ID, detailID, class, plname);
++			             VIDEO_PLIST_ID, plID, VIDEO_PLIST_ID, detailID, class, plname);
+ 		}
+ 
+ 		plpath = dirname(plpath);
+@@ -161,7 +161,7 @@ fill_playlists()
+ 		{
+ 			hash = gen_dir_hash(plist.path);
+ 			if( sql_get_int_field(db, "SELECT 1 from OBJECTS where OBJECT_ID = '%s$%llX$%d'",
+-			                      MUSIC_PLIST_ID, plID, plist.track) == 1 )
++			                      VIDEO_PLIST_ID, plID, plist.track) == 1 )
+ 			{
+ 				//DEBUG DPRINTF(E_DEBUG, L_SCANNER, "%d: already in database\n", plist.track);
+ 				found++;
+@@ -215,8 +215,8 @@ found:
+ 				             "SELECT"
+ 				             " '%s$%llX$%d', '%s$%llX', CLASS, DETAIL_ID, NAME, OBJECT_ID from OBJECTS"
+ 				             " where DETAIL_ID = %lld and OBJECT_ID glob '" BROWSEDIR_ID "$*'",
+-				             MUSIC_PLIST_ID, plID, plist.track,
+-				             MUSIC_PLIST_ID, plID,
++				             VIDEO_PLIST_ID, plID, plist.track,
++				             VIDEO_PLIST_ID, plID,
+ 				             detailID);
+ 				if( !last_dir )
+ 				{
+diff -rupN minidlna/scanner.c minidlnanew/scanner.c
+--- minidlna/scanner.c	2013-12-09 20:36:37.230911963 +0000
++++ minidlnanew/scanner.c	2013-12-09 20:44:04.461131003 +0000
+@@ -531,11 +531,11 @@ CreateDatabase(void)
+ 	                 MUSIC_ARTIST_ID, MUSIC_ID, _("Artist"),
+ 	                  MUSIC_ALBUM_ID, MUSIC_ID, _("Album"),
+ 	                    MUSIC_DIR_ID, MUSIC_ID, _("Folders"),
+-	                  MUSIC_PLIST_ID, MUSIC_ID, _("Playlists"),
+ 
+ 	                        VIDEO_ID, "0", _("Video"),
+ 	                    VIDEO_ALL_ID, VIDEO_ID, _("All Video"),
+ 	                    VIDEO_DIR_ID, VIDEO_ID, _("Folders"),
++	                  VIDEO_PLIST_ID, VIDEO_ID, _("Playlists"),
+ 
+ 	                        IMAGE_ID, "0", _("Pictures"),
+ 	                    IMAGE_ALL_ID, IMAGE_ID, _("All Pictures"),
+@@ -649,8 +649,9 @@ filter_v(scan_filter *d)
+ {
+ 	return ( filter_hidden(d) &&
+ 	         (filter_type(d) ||
+-		  (d->d_type == DT_REG &&
+-	           is_video(d->d_name)))
++		  ((d->d_type == DT_REG) &&
++		   (is_video(d->d_name) ||
++	            is_playlist(d->d_name))))
+ 	       );
+ }
+ 
+@@ -661,7 +662,8 @@ filter_vp(scan_filter *d)
+ 	         (filter_type(d) ||
+ 		  ((d->d_type == DT_REG) &&
+ 		   (is_video(d->d_name) ||
+-	            is_image(d->d_name))))
++		    is_image(d->d_name) ||
++	            is_playlist(d->d_name))))
+ 	       );
+ }
+ 
+diff -rupN minidlna/upnpsoap.c minidlnanew/upnpsoap.c
+--- minidlna/upnpsoap.c	2013-12-09 20:36:37.330911497 +0000
++++ minidlnanew/upnpsoap.c	2013-12-09 20:43:57.191131602 +0000
+@@ -826,7 +826,7 @@ callback(void *args, int argc, char **ar
+ 		if( genre && (passed_args->filter & FILTER_UPNP_GENRE) ) {
+ 			ret = strcatf(str, "&lt;upnp:genre&gt;%s&lt;/upnp:genre&gt;", genre);
+ 		}
+-		if( strncmp(id, MUSIC_PLIST_ID, strlen(MUSIC_PLIST_ID)) == 0 ) {
++		if( strncmp(id, VIDEO_PLIST_ID, strlen(VIDEO_PLIST_ID)) == 0 ) {
+ 			track = strrchr(id, '$')+1;
+ 		}
+ 		if( track && atoi(track) && (passed_args->filter & FILTER_UPNP_ORIGINALTRACKNUMBER) ) {
+@@ -1195,9 +1195,9 @@ BrowseContentDirectory(struct upnphttp *
+ 		}
+ 		else
+ 		{
+-			if( strncmp(ObjectID, MUSIC_PLIST_ID, strlen(MUSIC_PLIST_ID)) == 0 )
++			if( strncmp(ObjectID, VIDEO_PLIST_ID, strlen(VIDEO_PLIST_ID)) == 0 )
+ 			{
+-				if( strcmp(ObjectID, MUSIC_PLIST_ID) == 0 )
++				if( strcmp(ObjectID, VIDEO_PLIST_ID) == 0 )
+ 					ret = asprintf(&orderBy, "order by d.TITLE");
+ 				else
+ 					ret = asprintf(&orderBy, "order by length(OBJECT_ID), OBJECT_ID");
+diff -rupN minidlna/utils.c minidlnanew/utils.c
+--- minidlna/utils.c	2013-12-09 20:36:37.270912372 +0000
++++ minidlnanew/utils.c	2013-12-09 20:44:04.461131003 +0000
+@@ -475,7 +475,8 @@ resolve_unknown_type(const char * path,
+ 						type = TYPE_FILE;
+ 					break;
+ 				case TYPE_VIDEO:
+-					if( is_video(path) )
++					if( is_video(path) ||
++					    is_playlist(path) )
+ 						type = TYPE_FILE;
+ 					break;
+ 				case TYPE_IMAGES:

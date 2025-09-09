@@ -1,0 +1,5 @@
+nohup ./leptonica.sh >>leptonica.log 2>&1 &
+nohup ./tesseract.sh >>tesseract.log 2>&1 &
+nohup ./v8.sh >>v8.log 2>&1 &
+nohup ./nspr.sh >>nspr.log 2>&1 &
+nohup ./mozjs.sh >> mozjs.log 2>&1 &

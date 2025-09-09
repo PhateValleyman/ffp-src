@@ -1,0 +1,582 @@
+From 6b00cc703fbe66b8b18ae310d5c9c5ec709eb663 Mon Sep 17 00:00:00 2001
+From: Bruno Haible <bruno@clisp.org>
+Date: Thu, 26 Jan 2012 11:37:51 +0000
+Subject: Modernize quoting.
+
+---
+diff --git a/NOTES b/NOTES
+index 68eea3c..eb1c0e1 100644
+--- a/NOTES
++++ b/NOTES
+@@ -317,7 +317,7 @@ A: libiconv, as an internationalization library, supports those character
+        a nice encoding for debugging.
+      * UNICODE (big endian), UNICODEFEFF (little endian)
+        We DON'T implement these because they are stupid and not standardized.
+-   Full Unicode, in terms of `uint16_t' or `uint32_t'
++   Full Unicode, in terms of 'uint16_t' or 'uint32_t'
+    (with machine dependent endianness and alignment)
+      * UCS-2-INTERNAL, UCS-4-INTERNAL
+        We implement these because they are the preferred internal
+diff --git a/README b/README
+index d9d3b48..3da4d0f 100644
+--- a/README
++++ b/README
+@@ -47,10 +47,10 @@ It provides support for the encodings:
+         UTF-32, UTF-32BE, UTF-32LE
+         UTF-7
+         C99, JAVA
+-    Full Unicode, in terms of `uint16_t' or `uint32_t'
++    Full Unicode, in terms of 'uint16_t' or 'uint32_t'
+         (with machine dependent endianness and alignment)
+         UCS-2-INTERNAL, UCS-4-INTERNAL
+-    Locale dependent, in terms of `char' or `wchar_t'
++    Locale dependent, in terms of 'char' or 'wchar_t'
+         (with machine dependent endianness and alignment, and with OS and
+         locale dependent semantics)
+         char, wchar_t
+@@ -112,7 +112,7 @@ the traces of the first build by running "make distclean".
+ This library can be built and installed in two variants:
+ 
+   - The library mode. This works on all systems, and uses a library
+-    `libiconv.so' and a header file `<iconv.h>'. (Both are installed
++    'libiconv.so' and a header file '<iconv.h>'. (Both are installed
+     through "make install".)
+ 
+     To use it, simply #include <iconv.h> and use the functions.
+@@ -131,7 +131,7 @@ This library can be built and installed in two variants:
+   - The libc plug/override mode. This works on GNU/Linux, Solaris and OSF/1
+     systems only. It is a way to get good iconv support without having
+     glibc-2.1.
+-    It installs a library `preloadable_libiconv.so'. This library can be used
++    It installs a library 'preloadable_libiconv.so'. This library can be used
+     with LD_PRELOAD, to override the iconv* functions present in the C library.
+ 
+     On GNU/Linux and Solaris:
+diff --git a/gnulib-local/lib/xmalloc.c b/gnulib-local/lib/xmalloc.c
+index d2a1214..dd03fa3 100644
+--- a/gnulib-local/lib/xmalloc.c
++++ b/gnulib-local/lib/xmalloc.c
+@@ -35,7 +35,7 @@ void
+ xalloc_die ()
+ {
+   error (xmalloc_exit_failure, 0, _("memory exhausted"));
+-  /* The `noreturn' cannot be given to error, since it may return if
++  /* _Noreturn cannot be given to error, since it may return if
+      its first argument is 0.  To help compilers understand the
+      xalloc_die does terminate, call exit. */
+   exit (EXIT_FAILURE);
+diff --git a/lib/big5.h b/lib/big5.h
+index de10a99..6237106 100644
+--- a/lib/big5.h
++++ b/lib/big5.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -4142,9 +4142,9 @@ big5_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/cns11643_inv.h b/lib/cns11643_inv.h
+index 3a7c379..2b8860e 100644
+--- a/lib/cns11643_inv.h
++++ b/lib/cns11643_inv.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2005 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2005, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -15392,9 +15392,9 @@ cns11643_inv_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned short used = summary->used;
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/config.h.in b/lib/config.h.in
+index 644b6ba..d4e116b 100644
+--- a/lib/config.h.in
++++ b/lib/config.h.in
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 1999-2003, 2005, 2007, 2010 Free Software Foundation, Inc.
++/* Copyright (C) 1999-2003, 2005, 2007, 2010, 2012 Free Software Foundation, Inc.
+    This file is part of the GNU LIBICONV Library.
+ 
+    The GNU LIBICONV Library is free software; you can redistribute it
+@@ -69,13 +69,13 @@
+ /* Define to the value of ${prefix}, as a string. */
+ #undef INSTALLPREFIX
+ 
+-/* Define to `__inline__' or `__inline' if that's what the C compiler
++/* Define to '__inline__' or '__inline' if that's what the C compiler
+    calls it, or to nothing if 'inline' is not supported under any name.  */
+ #ifndef __cplusplus
+ #undef inline
+ #endif
+ 
+-/* Define to `int' if <sys/types.h> does not define. */
++/* Define to 'int' if <sys/types.h> does not define. */
+ #undef mode_t
+ 
+ /* Define as a signed type of the same size as size_t. */
+diff --git a/lib/cp932ext.h b/lib/cp932ext.h
+index 6f94c9a..66a73eb 100644
+--- a/lib/cp932ext.h
++++ b/lib/cp932ext.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -691,9 +691,9 @@ cp932ext_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/cp950ext.h b/lib/cp950ext.h
+index 2a18d80..93e1563 100644
+--- a/lib/cp950ext.h
++++ b/lib/cp950ext.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -143,9 +143,9 @@ cp950ext_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/gb12345ext.h b/lib/gb12345ext.h
+index b461ec8..c73b178 100644
+--- a/lib/gb12345ext.h
++++ b/lib/gb12345ext.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -1778,9 +1778,9 @@ gb12345ext_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/gb2312.h b/lib/gb2312.h
+index 831a569..98ffc55 100644
+--- a/lib/gb2312.h
++++ b/lib/gb2312.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -2553,9 +2553,9 @@ gb2312_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/gbkext_inv.h b/lib/gbkext_inv.h
+index 45f57d9..197d6ac 100644
+--- a/lib/gbkext_inv.h
++++ b/lib/gbkext_inv.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -2325,9 +2325,9 @@ gbkext_inv_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/hkscs1999.h b/lib/hkscs1999.h
+index 3732763..049af97 100644
+--- a/lib/hkscs1999.h
++++ b/lib/hkscs1999.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2006 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2006, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -2987,9 +2987,9 @@ hkscs1999_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/hkscs2001.h b/lib/hkscs2001.h
+index 66642cf..b69342c 100644
+--- a/lib/hkscs2001.h
++++ b/lib/hkscs2001.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2006 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2006, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -665,9 +665,9 @@ hkscs2001_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/hkscs2004.h b/lib/hkscs2004.h
+index d5ab997..bfa2aad 100644
+--- a/lib/hkscs2004.h
++++ b/lib/hkscs2004.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2006 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2006, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -661,9 +661,9 @@ hkscs2004_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/hkscs2008.h b/lib/hkscs2008.h
+index ee6235c..3e15bcd 100644
+--- a/lib/hkscs2008.h
++++ b/lib/hkscs2008.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2010 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2010, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -449,9 +449,9 @@ hkscs2008_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/isoir165ext.h b/lib/isoir165ext.h
+index 0bc811a..a124941 100644
+--- a/lib/isoir165ext.h
++++ b/lib/isoir165ext.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -782,9 +782,9 @@ isoir165ext_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/jisx0208.h b/lib/jisx0208.h
+index 755b8ba..af303a6 100644
+--- a/lib/jisx0208.h
++++ b/lib/jisx0208.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -2397,9 +2397,9 @@ jisx0208_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/jisx0212.h b/lib/jisx0212.h
+index 371dbb1..d0fc372 100644
+--- a/lib/jisx0212.h
++++ b/lib/jisx0212.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -2171,9 +2171,9 @@ jisx0212_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/jisx0213.h b/lib/jisx0213.h
+index 98468c4..ff32c6d 100644
+--- a/lib/jisx0213.h
++++ b/lib/jisx0213.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2004 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2004, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -5907,9 +5907,9 @@ static unsigned short ucs4_to_jisx0213 (ucs4_t ucs)
+       unsigned short used = summary->used;
+       unsigned int i = ucs & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/ksc5601.h b/lib/ksc5601.h
+index fd16623..60b8c9a 100644
+--- a/lib/ksc5601.h
++++ b/lib/ksc5601.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2007 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2007, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -3004,9 +3004,9 @@ ksc5601_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/uhc_1.h b/lib/uhc_1.h
+index 7b0c725..9c83f6f 100644
+--- a/lib/uhc_1.h
++++ b/lib/uhc_1.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -1706,9 +1706,9 @@ uhc_1_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/lib/uhc_2.h b/lib/uhc_2.h
+index 4aa290a..b210c26 100644
+--- a/lib/uhc_2.h
++++ b/lib/uhc_2.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 1999-2001 Free Software Foundation, Inc.
++ * Copyright (C) 1999-2001, 2012 Free Software Foundation, Inc.
+  * This file is part of the GNU LIBICONV Library.
+  *
+  * The GNU LIBICONV Library is free software; you can redistribute it
+@@ -1003,9 +1003,9 @@ uhc_2_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
+       unsigned int i = wc & 0x0f;
+       if (used & ((unsigned short) 1 << i)) {
+         unsigned short c;
+-        /* Keep in `used' only the bits 0..i-1. */
++        /* Keep in 'used' only the bits 0..i-1. */
+         used &= ((unsigned short) 1 << i) - 1;
+-        /* Add `summary->indx' and the number of bits set in `used'. */
++        /* Add 'summary->indx' and the number of bits set in 'used'. */
+         used = (used & 0x5555) + ((used & 0xaaaa) >> 1);
+         used = (used & 0x3333) + ((used & 0xcccc) >> 2);
+         used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);
+diff --git a/src/iconv.c b/src/iconv.c
+index 825ef22..8a592e4 100644
+--- a/src/iconv.c
++++ b/src/iconv.c
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 2000-2009, 2011 Free Software Foundation, Inc.
++/* Copyright (C) 2000-2009, 2011-2012 Free Software Foundation, Inc.
+    This file is part of the GNU LIBICONV Library.
+ 
+    This program is free software: you can redistribute it and/or modify
+@@ -107,7 +107,7 @@ static void usage (int exitcode)
+          Align it correctly against the first line.  */
+       _("or:    iconv -l");
+     fprintf(stderr, "%s\n%s\n", helpstring1, helpstring2);
+-    fprintf(stderr, _("Try `%s --help' for more information.\n"), program_name);
++    fprintf(stderr, _("Try '%s --help' for more information.\n"), program_name);
+   } else {
+     /* xgettext: no-wrap */
+     /* TRANSLATORS: The first line of the long usage message.
+diff --git a/tests/uniq-u.c b/tests/uniq-u.c
+index 029150a..dd8bf35 100644
+--- a/tests/uniq-u.c
++++ b/tests/uniq-u.c
+@@ -1,5 +1,5 @@
+ /* uniq -- remove duplicate lines from a sorted file
+-   Copyright (C) 86, 91, 1995-1998, 1999 Free Software Foundation, Inc.
++   Copyright (C) 86, 91, 1995-1998, 1999, 2012 Free Software Foundation, Inc.
+ 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+@@ -58,7 +58,7 @@ xrealloc (void *p, size_t n)
+   return p;
+ }
+ 
+-/* A `struct linebuffer' holds a line of text. */
++/* A 'struct linebuffer' holds a line of text. */
+ 
+ struct linebuffer
+ {
+diff --git a/tools/cjk_tab_to_h.c b/tools/cjk_tab_to_h.c
+index db96ffd..c6c4d94 100644
+--- a/tools/cjk_tab_to_h.c
++++ b/tools/cjk_tab_to_h.c
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 1999-2004, 2006-2007, 2010 Free Software Foundation, Inc.
++/* Copyright (C) 1999-2004, 2006-2007, 2010, 2012 Free Software Foundation, Inc.
+    This file is part of the GNU LIBICONV Tools.
+ 
+    This program is free software: you can redistribute it and/or modify
+@@ -822,9 +822,9 @@ static void output_uni2charset_sparse (const char* name, Encoding* enc, bool mon
+   printf("      if (used & ((unsigned short) 1 << i)) {\n");
+   if (monotonic || !is_large)
+     printf("        unsigned short c;\n");
+-  printf("        /* Keep in `used' only the bits 0..i-1. */\n");
++  printf("        /* Keep in 'used' only the bits 0..i-1. */\n");
+   printf("        used &= ((unsigned short) 1 << i) - 1;\n");
+-  printf("        /* Add `summary->indx' and the number of bits set in `used'. */\n");
++  printf("        /* Add 'summary->indx' and the number of bits set in 'used'. */\n");
+   printf("        used = (used & 0x5555) + ((used & 0xaaaa) >> 1);\n");
+   printf("        used = (used & 0x3333) + ((used & 0xcccc) >> 2);\n");
+   printf("        used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);\n");
+@@ -2070,9 +2070,9 @@ static void do_jisx0213 (const char* name)
+   printf("      unsigned short used = summary->used;\n");
+   printf("      unsigned int i = ucs & 0x0f;\n");
+   printf("      if (used & ((unsigned short) 1 << i)) {\n");
+-  printf("        /* Keep in `used' only the bits 0..i-1. */\n");
++  printf("        /* Keep in 'used' only the bits 0..i-1. */\n");
+   printf("        used &= ((unsigned short) 1 << i) - 1;\n");
+-  printf("        /* Add `summary->indx' and the number of bits set in `used'. */\n");
++  printf("        /* Add 'summary->indx' and the number of bits set in 'used'. */\n");
+   printf("        used = (used & 0x5555) + ((used & 0xaaaa) >> 1);\n");
+   printf("        used = (used & 0x3333) + ((used & 0xcccc) >> 2);\n");
+   printf("        used = (used & 0x0f0f) + ((used & 0xf0f0) >> 4);\n");
+--
+cgit v0.9.0.2

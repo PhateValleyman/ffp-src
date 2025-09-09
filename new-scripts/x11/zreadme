@@ -1,0 +1,7 @@
+nohup ./util-macros.sh >> util-macros.log 2>&1 &
+nohup ./xproto-headers.sh >> xproto-headers.log 2>&1 &
+nohup ./libXau.sh >> libXau.log 2>&1 &
+nohup ./libXdmcp.sh >> libXdmcp.log 2>&1 &
+nohup ./xcb-proto.sh >> xcb-proto.log 2>&1 &
+nohup ./libxcb.sh >> libxcb.log 2>&1 &
+nohup ./xorg-libs.sh >> xorg-libs.log 2>&1 &

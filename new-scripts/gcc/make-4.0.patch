@@ -1,0 +1,21 @@
+diff -rupN make-4.0/tests/scripts/features/output-sync make-4.0patched/tests/scripts/features/output-sync
+--- make-4.0/tests/scripts/features/output-sync	2013-10-06 02:12:24.000000000 +0300
++++ make-4.0patched/tests/scripts/features/output-sync	2014-09-20 19:19:43.830068911 +0300
+@@ -140,7 +140,7 @@ bar: start
+ bar: end
+ baz: start
+ baz: end
+-#MAKE#[1]: Leaving directory '#PWD#/bar'\n", 0, 6);
++#MAKE#[1]: Leaving directory '#PWD#/bar'\n", 0, 10);
+ 
+ # Test per-target synchronization.
+ # Note we have to sleep again here after starting the foo makefile before
+@@ -171,7 +171,7 @@ foo: end
+ #MAKE#[1]: Entering directory '#PWD#/bar'
+ baz: start
+ baz: end
+-#MAKE#[1]: Leaving directory '#PWD#/bar'\n", 0, 6);
++#MAKE#[1]: Leaving directory '#PWD#/bar'\n", 0, 10);
+ 
+ # Rerun but this time suppress the directory tracking
+ unlink(@syncfiles);

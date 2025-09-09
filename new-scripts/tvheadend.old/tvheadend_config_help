@@ -1,0 +1,87 @@
+Usage: ./configure [options]
+
+Miscellaneous
+  --help                         Print this message
+
+Installation Paths
+  --prefix=DIR$                  Installation root [/usr/local]
+  --bindir=DIR                   Install binaries in DIR [${prefix}/bin]
+  --libdir=DIR                   Install libraries in DIR [${prefix}/lib]
+  --mandir=DIR                   Install man pages in DIR [${datadir}/man]
+  --datadir=DIR                  Install data files in DIR [${prefix}/share]
+
+Compiler/Arch
+  --cc=CC                        Build using compiler [gcc]
+  --cflags=CFLAGS                Build using C flags
+  --ldflags=LDFLAGS              Build using LD flags
+  --cpu=CPU                      Build and optimize for specific CPU
+  --arch=ARCH                    Build for architecture [arm]
+  --platform=PLATFORM            Build for platform [linux]
+  --nowerror                     Build without -Werror CFLAGS
+  --python=PYTHON                Use python binary [python]
+
+Options
+  --disable-pie                  Disable pie
+  --enable-ccdebug               Enable ccdebug
+  --disable-cwc                  Disable cwc
+  --disable-capmt                Disable capmt
+  --disable-constcw              Disable constcw
+  --disable-linuxdvb             Disable linuxdvb
+  --disable-satip_server         Disable satip_server
+  --disable-satip_client         Disable satip_client
+  --enable-hdhomerun_client      Enable hdhomerun_client
+  --disable-hdhomerun_static     Disable hdhomerun_static
+  --disable-iptv                 Disable iptv
+  --disable-tsfile               Disable tsfile
+  --disable-dvbscan              Disable dvbscan
+  --disable-timeshift            Disable timeshift
+  --disable-trace                Disable trace
+  --disable-imagecache           Disable imagecache
+  --enable-imagecache            Enable imagecache
+  --disable-avahi                Disable avahi
+  --enable-avahi                 Enable avahi
+  --disable-zlib                 Disable zlib
+  --enable-zlib                  Enable zlib
+  --disable-libav                Disable libav
+  --enable-libav                 Enable libav
+  --disable-ffmpeg_static        Disable ffmpeg_static
+  --disable-libx264              Disable libx264
+  --disable-libx264_static       Disable libx264_static
+  --disable-libx265              Disable libx265
+  --disable-libx265_static       Disable libx265_static
+  --disable-libvpx               Disable libvpx
+  --disable-libvpx_static        Disable libvpx_static
+  --disable-libtheora            Disable libtheora
+  --disable-libtheora_static     Disable libtheora_static
+  --disable-libvorbis            Disable libvorbis
+  --disable-libvorbis_static     Disable libvorbis_static
+  --disable-libfdkaac            Disable libfdkaac
+  --disable-libfdkaac_static     Disable libfdkaac_static
+  --disable-nvenc                Disable nvenc
+  --enable-nvenc                 Enable nvenc
+  --enable-qsv                   Enable qsv
+  --disable-libmfx_static        Disable libmfx_static
+  --disable-inotify              Disable inotify
+  --enable-inotify               Enable inotify
+  --disable-epoll                Disable epoll
+  --enable-epoll                 Enable epoll
+  --disable-uriparser            Disable uriparser
+  --enable-uriparser             Enable uriparser
+  --disable-ccache               Disable ccache
+  --enable-ccache                Enable ccache
+  --disable-tvhcsa               Disable tvhcsa
+  --enable-tvhcsa                Enable tvhcsa
+  --enable-bundle                Enable bundle
+  --enable-pngquant              Enable pngquant
+  --enable-dvbcsa                Enable dvbcsa
+  --disable-dvben50221           Disable dvben50221
+  --enable-dvben50221            Enable dvben50221
+  --enable-kqueue                Enable kqueue
+  --disable-dbus_1               Disable dbus_1
+  --enable-dbus_1                Enable dbus_1
+  --enable-android               Enable android
+  --enable-tsdebug               Enable tsdebug
+  --enable-gtimer_check          Enable gtimer_check
+  --enable-slow_memoryinfo       Enable slow_memoryinfo
+  --enable-libsystemd_daemon     Enable libsystemd_daemon
+  --disable-bintray_cache        Disable bintray_cache

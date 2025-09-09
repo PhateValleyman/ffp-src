@@ -1,0 +1,72 @@
+nohup ./1gmp.sh >>gmp.log 2>&1 &
+nohup ./2mpfr.sh >>mpfr.log 2>&1 &
+nohup ./3mpc.sh >>mpc.log 2>&1 &
+nohup ./4isl.sh >>isl.log 2>&1 &
+nohup ./gcc.sh >>gcc.log 2>&1 &
+
+gcc depends on?  br2:gmp br2:mpfr br2:mpc s:zlib
+
+After install new gcc first compile libtool as it depends on exact version of gcc
+Correct order:
+nohup ./libtool.sh >>libtool.log 2>&1 &
+nohup ./binutils.sh >>binutils.log 2>&1 &
+nohup ./m4.sh >>m4.log 2>&1 &
+nohup ./autoconf.sh >>autoconf.log 2>&1 &
+nohup ./automake.sh >>automake.log 2>&1 &
+libiconv
+gettext
+libiconv again
+nohup ./libiconv.sh >>libiconv.log 2>&1 &
+nohup ./gettext.sh >>gettext.log 2>&1 &
+nohup ./libiconv.sh >>libiconv.log 2>&1 &
+nohup ./make.sh >>make.log 2>&1 &
+nohup ./pkg-config.sh >>pkg-config.log 2>&1 &
+nohup ./intltool.sh >>intltool.log 2>&1 &
+nohup ./help2man.sh >>help2man.log 2>&1 &
+nohup ./texinfo.sh >>texinfo.log 2>&1 &
+nohup ./bison.sh >>bison.log 2>&1 &
+nohup ./flex.sh >>flex.log 2>&1 &
+nohup ./tcl.sh >>tcl.log 2>&1 &
+nohup ./expect.sh >> expect.log 2>&1 &
+# Testing dejadnu build needs direct terminal access
+./dejagnu.sh >> dejagnu.log 2>&1 &
+nohup ./check.sh >>check.log 2>&1 &
+
+
+For testing:
+gcc -print-search-dirs
+#http://stackoverflow.com/questions/17939930/finding-out-what-the-gcc-include-path-is
+echo | cpp -Wp,-v
+`gcc -print-prog-name=cc1` -v
+`gcc -print-prog-name=cc1plus` -v
+gcc -dumpspecs 
+
+
+root@NSA310:/i-data/7cf371c4/ffp0.7arm/scripts/gcc# gcc -print-search-dirs
+install: /e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/
+programs: =/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../libexec/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../libexec/gcc/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/../../../../arm-ffp-linux-uclibcgnueabi/bin/arm-ffp-linux-uclibcgnueabi/4.9.1/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/../../../../arm-ffp-linux-uclibcgnueabi/bin/
+libraries: =/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/../../../../arm-ffp-linux-uclibcgnueabi/lib/arm-ffp-linux-uclibcgnueabi/4.9.1/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/../../../../arm-ffp-linux-uclibcgnueabi/lib/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/../../../arm-ffp-linux-uclibcgnueabi/4.9.1/:/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.1/../../../:/lib/arm-ffp-linux-uclibcgnueabi/4.9.1/:/lib/:/usr/lib/arm-ffp-linux-uclibcgnueabi/4.9.1/:/usr/lib/
+
+Duplicted functions error:
+
+In file included from /ffp/include/linux/sysctl.h:28:0,
+                 from /mnt/HD_a2/build/gcc-build/../gcc-4.9.1/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.c
+c:62:
+/ffp/include/linux/kernel.h:10:8: error: redefinition of 'struct sysinfo'
+ struct sysinfo {
+        ^
+In file included from /mnt/HD_a2/build/gcc-build/../gcc-4.9.1/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.c
+c:53:0:
+/ffp/include/sys/sysinfo.h:28:8: error: previous definition of 'struct sysinfo'
+ struct sysinfo {
+        ^
+make[4]: *** [sanitizer_platform_limits_posix.lo] Error 1
+make[4]: Leaving directory `/i-data/7cf371c4/build/gcc-build/arm-ffp-linux-uclibcgnueabi/libsanitizer/sanitizer_common'
+make[3]: *** [all-recursive] Error 1
+make[3]: Leaving directory `/i-data/7cf371c4/build/gcc-build/arm-ffp-linux-uclibcgnueabi/libsanitizer'
+make[2]: *** [all] Error 2
+make[2]: Leaving directory `/i-data/7cf371c4/build/gcc-build/arm-ffp-linux-uclibcgnueabi/libsanitizer'
+make[1]: *** [all-target-libsanitizer] Error 2
+make[1]: Leaving directory `/i-data/7cf371c4/build/gcc-build'
+make: *** [all] Error 2
+

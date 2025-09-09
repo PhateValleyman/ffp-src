@@ -1,0 +1,90 @@
+#!/ffp/bin/sh
+
+set -e
+export SHELL="/ffp/bin/sh"
+#export FONTCONFIG_PATH="/ffp/etc/fonts"
+SOURCEDIR=/mnt/HD_a2/build
+SOURCEURL=git://source.ffmpeg.org/ffmpeg.git
+GITVERSION=2.1
+GITBRANCH=remotes/origin/release/${GITVERSION}
+HOMEURL=http://www.ffmpeg.org
+PACKAGENAME=ffmpeg
+if [ ! -d ${SOURCEDIR} ]; then
+    mkdir -p ${SOURCEDIR}
+fi
+cd ${SOURCEDIR}
+git clone ${SOURCEURL}
+cd ${PACKAGENAME}
+git checkout -b ${PACKAGENAME}-${GITVERSION} ${GITBRANCH}
+git pull
+VERSION=`cat VERSION|xargs`_git`date "+%Y%m%d"`
+#### Patch for  FFMPEG 1.1.1 to enable build with libshine
+#cp /i-data/7cf371c4/ffp0.7arm/scripts/ffmpeg2/ffmpeg1shine1.patch ${SOURCEDIR}/${PACKAGENAME}/
+#patch -p1 < ffmpeg1shine1.patch
+#sed -i '/echo "texi2html enabled/i\echo "libshine enabled          ${libshine-no}"' configure
+#### Patch for  FFMPEG 1.1.1 to enable build with shine 3.0.0
+#sed -i 's|shine_encode_frame|shine_encode_buffer|g' ${SOURCEDIR}/${PACKAGENAME}/configure
+#cp /i-data/7cf371c4/ffp0.7arm/scripts/ffmpeg2/ffmpeg1shine3.patch ${SOURCEDIR}/${PACKAGENAME}/
+#patch -p1 < fmpeg1shine3.patch
+##### Patch for  FFMPEG 2.0 to enable build with shine 3.0.0 (only master branch has this patch)
+#wget "http://git.videolan.org/?p=ffmpeg.git;a=patch;h=38536e59275052b89755c6ee806642ce27055009" -O shine3.0.0.patch
+#patch -p1 < shine3.0.0.patch
+#### ARM-specific fixed point maths modification for mpeg audio encoder
+sed -i "s/^#define USE_FLOATS//" libavcodec/mpegaudioenc.c
+#### Adapt executables to FFP prefix
+find . -type f -iname "config.rpath" -exec sed -i -r 's/^#! ?\/bin\/sh/#!\/ffp\/bin\/sh/' {} \;
+find . -type f -executable -exec sed -i -r 's/^#! ?\/bin\/sh/#!\/ffp\/bin\/sh/' {} \;
+find . -type f -executable -exec sed -i -r 's/^#! ?\/bin\/bash/#!\/ffp\/bin\/bash/' {} \;
+find . -type f -executable -exec sed -i -r 's/^#! ?\/usr\/bin\/env bash/#!\/ffp\/bin\/env bash/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/usr\/bin\/python/#!\/ffp\/bin\/python/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/usr\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/bin\/python/#!\/ffp\/bin\/python/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -iname "*.pl*" -exec sed -i -r 's/^#! ?\/usr\/bin\/perl/#!\/ffp\/bin\/perl/' {} \;
+find . -type f -executable -exec sed -i -r 's/^#! ?\/usr\/bin\/env perl/#!\/ffp\/bin\/env perl/' {} \;
+#### Correct Run-time system search path for libraries for libtool
+sed -i '/$lt_ld_extra/c\    sys_lib_dlsearch_path_spec="/ffp/lib $lt_ld_extra"' configure
+# Something changed in FFmpeg 1.1.1's configure script and now vfp and neon optimizations have to be explicitly disabled
+# for ARMv5TE, which doesn't have those features in any case
+# With FFMPEG 1.1.1 --disable-static remuxing and transcoding is not working and without --enable-shared Minidlna can not start
+#--extra-cflags='--static' --extra-cxxflags='--static' --extra-libs='-static'
+./configure --prefix=/ffp --disable-static --enable-shared --enable-pthreads --enable-gpl --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-vfp --disable-neon --enable-pic --disable-ffplay --disable-ffserver --enable-libx264 --enable-libshine --enable-libmp3lame --enable-libfdk-aac --enable-libtwolame --enable-libopus --enable-librtmp --enable-libass --enable-fontconfig --enable-libfreetype --extra-version=compiled_by_barmalej2_for_Serviio1.4_and_MiniDLNA1.1.1
+make
+make install DESTDIR=${SOURCEDIR}
+mkdir -p ${SOURCEDIR}/install
+echo "" >> ${SOURCEDIR}/install/DESCR
+echo "Description of ${PACKAGENAME}:" >> ${SOURCEDIR}/install/DESCR
+echo "FFmpeg is a complete, cross-platform solution to record, convert and stream audio and video." >> ${SOURCEDIR}/install/DESCR
+echo "It is the leading multimedia framework, able to decode, encode, transcode, mux, demux" >> ${SOURCEDIR}/install/DESCR
+echo "stream, filter and play pretty much anything that humans and machines have created" >> ${SOURCEDIR}/install/DESCR
+echo "Version:${VERSION}, compiled by barmalej2 for Serviio 1.4 and MiniDLNA 1.1.1" >> ${SOURCEDIR}/install/DESCR
+echo "Homepage:${HOMEURL}" >> ${SOURCEDIR}/install/DESCR
+echo "" >> ${SOURCEDIR}/install/DESCR
+#echo "This is a complete static build. None of additional packages install is required." >> ${SOURCEDIR}/install/DESCR
+echo "Important!!! This ${PACKAGENAME} package is build with shared libraries only." >> ${SOURCEDIR}/install/DESCR
+echo "             Install of additional dependency libraries is required." >> ${SOURCEDIR}/install/DESCR
+echo "Requires libraries from: expat fdk-aac fontconfig freetype fribidi gcc-solibs gettext lame libiconv" >> ${SOURCEDIR}/install/DESCR
+echo "                         libass openssl opus rtmpdump shine twolame x264 uClibc-solibs zlib bzip2" >> ${SOURCEDIR}/install/DESCR
+echo "" >> ${SOURCEDIR}/install/DESCR
+echo ${HOMEURL} > ${SOURCEDIR}/install/HOMEPAGE
+cd ${SOURCEDIR}
+rm -rf ${SOURCEDIR}/${PACKAGENAME}
+if [ -d ${SOURCEDIR}/ffp/share/doc ]; then
+   rm -rf ${SOURCEDIR}/ffp/share/doc
+fi
+#### Correct permissions for shared libraries and libtool library files
+if [ -d ${SOURCEDIR}/ffp/lib ]; then
+   find ${SOURCEDIR}/ffp/lib -type f -iname "*.la" -exec chmod 755 {} \;
+   find ${SOURCEDIR}/ffp/lib -type f -iname "*.so*" -exec chmod 755 {} \;
+fi
+makepkg ${PACKAGENAME} ${VERSION} 0
+if [ ! -d "/mnt/HD_a2/ffp0.7arm/packages/ffmpeg2" ]; then
+    mkdir -p /mnt/HD_a2/ffp0.7arm/packages/ffmpeg2
+fi
+if [ ! -d "/ffp/funpkg/additional/ffmpeg2" ]; then
+    mkdir -p /ffp/funpkg/additional/ffmpeg2
+fi
+cp /tmp/${PACKAGENAME}-${VERSION}-arm-0.txz /mnt/HD_a2/ffp0.7arm/packages/ffmpeg2/
+mv /tmp/${PACKAGENAME}-${VERSION}-arm-0.txz /ffp/funpkg/additional/ffmpeg2/
+cd
+rm -rf ${SOURCEDIR}

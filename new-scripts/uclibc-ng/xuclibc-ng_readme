@@ -1,0 +1,41 @@
+git clone git://uclibc.org/uClibc.git
+cd uClibc
+git checkout -b 0.9.33.3 remotes/origin/0.9.33
+#Remove -Wdeclaration-after-statement warning to avoid this: ISO C90 forbids mixed declarations and code  
+sed -i 's| -Wdeclaration-after-statement||' Rules.mak
+cp -a ../.config .
+cp -a ../locales.txt ../codesets.txt ../uClibc-locale-20081111-32-el.tgz extra/locale
+make silentoldconfig
+make pregen
+cd extra/locale
+make
+cd ../../
+make all
+make utils
+# For first build with UTF8, if previously it wasn't, extract c8tables.h and wctables.h again from uClibc-locale-20081111-32-el.tgz to extra/locale
+make PREFIX=/i-data/7cf371c4/ffpbuildenv install
+make PREFIX=/i-data/7cf371c4/ffpbuildenv install_utils
+make PREFIX=/i-data/7cf371c4/ffpbuildenv install_runtime
+cd ..
+mv ffp tmp/ffp
+cd tmp
+makepkg uClibc 0.9.33.3_git 2
+
+# Don't change default encoding in Python
+# http://stackoverflow.com/questions/11741574/how-to-deal-with-utf-8-encoded-text-when-writing-to-the-console-in-python-3
+The only supported default encodings in Python are:
+
+ Python 2.x: ASCII
+ Python 3.x: UTF-8
+
+Python check encodings:
+import sys
+sys.getdefaultencoding()
+sys.getfilesystemencoding()
+sys.stdin.encoding
+sys.stdout.encoding
+
+
+nohup ./uclibc-ng.sh >> uclibc-ng.log 2>&1 &
+nohup ./uclibc-ng_utf8.sh >> uclibc-ng_utf8.log 2>&1 &
+

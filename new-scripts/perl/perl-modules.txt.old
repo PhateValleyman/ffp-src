@@ -1,0 +1,24 @@
+XML::Parser,
+XML::SAX, XML::SAX::Base, XML::SAX::Expat, XML::Simple, Locale::gettext Getopt::Long
+Text::ParseWords Text::Tabs Text::Wrap Encode Text::Unidecode Data::Dumper
+
+
+
+Locale::gettext Locale-gettext-1.05
+Getopt::Long Getopt-Long-2.42
+Text::ParseWords Text-ParseWords-3.29
+Text::Tabs Text-Tabs+Wrap-2013.0523
+Text::Wrap Text-Tabs+Wrap-2013.0523
+Encode Encode-2.64
+Text::Unidecode Text-Unidecode-1.22
+Data::Dumper Data-Dumper-2.154
+Locale::Messages and a lot more from libintl-perl-1.23
+Unicode::EastAsianWidth Unicode-EastAsianWidth-1.33.tar.gz
+ExtUtils::MakeMaker ExtUtils-MakeMaker-7.02.tar.gz
+
+
+
+help2man
+Texinfo
+Requires: perl(Unicode::EastAsianWidth)
+intltool

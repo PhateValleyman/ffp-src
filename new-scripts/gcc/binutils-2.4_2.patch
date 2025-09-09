@@ -1,0 +1,26 @@
+From a2d010462ce99a4fc79fb19c31915f86fafeea43 Mon Sep 17 00:00:00 2001
+From: uros <uros@138bc75d-0d04-0410-961f-82ee72b054a4>
+Date: Thu, 13 Mar 2014 22:04:07 +0000
+Subject: [PATCH] * regex.c (bzero) [!_LIBC]: Cast the call to memcpy to (void).
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@208558 138bc75d-0d04-0410-961f-82ee72b054a4
+---
+ libiberty/regex.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/libiberty/regex.c b/libiberty/regex.c
+index cc9acdc..16338cb 100644
+--- a/libiberty/regex.c
++++ b/libiberty/regex.c
+@@ -151,7 +151,7 @@ char *realloc ();
+ #    include <string.h>
+ #    ifndef bzero
+ #     ifndef _LIBC
+-#      define bzero(s, n)	memset (s, '\0', n)
++#      define bzero(s, n)	((void) memset (s, '\0', n))
+ #     else
+ #      define bzero(s, n)	__bzero (s, n)
+ #     endif
+-- 
+1.7.1
+

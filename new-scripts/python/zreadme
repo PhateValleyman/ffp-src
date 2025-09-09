@@ -1,0 +1,4 @@
+nohup ./python.sh >>python.log 2>&1 &
+nohup ./setuptools_python2.7.sh >>setuptools_python2.7.log 2>&1 &
+nohup ./pip_python2.7.sh >>pip_python2.7.log 2>&1 &
+CXX Flags Wno-invalid-offsetof

@@ -1,0 +1,221 @@
+Old ffmpeg2 2.1.8 build:
+real    0m 29.47s
+user    0m 22.44s
+sys     0m 5.56s
+1) with --enable-pic config option
+
+time ffmpeg -fflags +genpts -threads auto -i fringe.mp4 -y -c:v copy -bsf:v h264_mp4toannexb -c:a copy -map 0:0 -map 0:1 -sn -f mpegts fringe.out.ts
+ffmpeg version n3.3.1-4-g3bc5e42-compiled_by_barmalej2_for_ffp0.7arm Copyright (c) 2000-2017 the FFmpeg developers
+  built with gcc 4.9.2 (GCC)
+  configuration: --prefix=/ffp --cpu=armv5te --disable-runtime-cpudetect --disable-armv6 --disable-armv6t2 --disable-vfp --disable-neon --disable-debug --disable-stripping --disable-ffplay --disable-ffserver --disable-doc --disable-htmlpages --disable-podpages --disable-txtpages --disable-static --enable-shared --enable-pic --enable-gpl --enable-avresample --enable-gnutls --enable-libass --enable-libmp3lame --enable-libopus --enable-librtmp --enable-libshine --enable-libtheora --enable-libtwolame --enable-libv4l2 --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --extra-cflags=-Wno-deprecated-declarations --extra-version=compiled_by_barmalej2_for_ffp0.7arm
+  libavutil      55. 58.100 / 55. 58.100
+  libavcodec     57. 89.100 / 57. 89.100
+  libavformat    57. 71.100 / 57. 71.100
+  libavdevice    57.  6.100 / 57.  6.100
+  libavfilter     6. 82.100 /  6. 82.100
+  libavresample   3.  5.  0 /  3.  5.  0
+  libswscale      4.  6.100 /  4.  6.100
+  libswresample   2.  7.100 /  2.  7.100
+  libpostproc    54.  5.100 / 54.  5.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'fringe.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    creation_time   : 2013-01-18T20:50:07.000000Z
+  Duration: 00:43:14.22, start: 0.000000, bitrate: 855 kb/s
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, 732 kb/s, 23.98 fps, 23.98 tbr, 24k tbn, 47.95 tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Output #0, mpegts, to 'fringe.out.ts':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    encoder         : Lavf57.71.100
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, q=2-31, 732 kb/s, 23.98 fps, 23.98 tbr, 90k tbn, 24k tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (copy)
+Press [q] to stop, [?] for help
+frame=62199 fps=1423 q=-1.0 Lsize=  300686kB time=00:43:14.09 bitrate= 949.5kbits/s speed=59.3x
+video:231881kB audio:37682kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 11.545385%
+real    0m 44.36s
+user    0m 36.85s
+sys     0m 5.71s
+
+2) without --enable-pic config option (the same result)
+time ffmpeg -fflags +genpts -threads auto -i fringe.mp4 -y -c:v copy -bsf:v h264_mp4toannexb -c:a copy -map 0:0 -map 0:1 -sn -f mpegts fringe.out.stf
+ffmpeg version n3.3.1-8-g6ee4b20-compiled_by_barmalej2_for_ffp0.7arm Copyright (c) 2000-2017 the FFmpeg developers
+  built with gcc 4.9.2 (GCC)
+  configuration: --prefix=/ffp --cpu=armv5te --disable-runtime-cpudetect --disable-armv6 --disable-armv6t2 --disable-vfp --disable-neon --disable-debug --disable-stripping --disable-ffplay --disable-ffserver --disable-doc --disable-htmlpages --disable-podpages --disable-txtpages --disable-static --enable-shared --enable-gpl --enable-avresample --enable-gnutls --enable-libass --enable-libmp3lame --enable-libopus --enable-librtmp --enable-libshine --enable-libtheora --enable-libtwolame --enable-libv4l2 --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --extra-cflags=-Wno-deprecated-declarations --extra-version=compiled_by_barmalej2_for_ffp0.7arm
+  libavutil      55. 58.100 / 55. 58.100
+  libavcodec     57. 89.100 / 57. 89.100
+  libavformat    57. 71.100 / 57. 71.100
+  libavdevice    57.  6.100 / 57.  6.100
+  libavfilter     6. 82.100 /  6. 82.100
+  libavresample   3.  5.  0 /  3.  5.  0
+  libswscale      4.  6.100 /  4.  6.100
+  libswresample   2.  7.100 /  2.  7.100
+  libpostproc    54.  5.100 / 54.  5.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'fringe.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    creation_time   : 2013-01-18T20:50:07.000000Z
+  Duration: 00:43:14.22, start: 0.000000, bitrate: 855 kb/s
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, 732 kb/s, 23.98 fps, 23.98 tbr, 24k tbn, 47.95 tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Output #0, mpegts, to 'fringe.out.stf':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    encoder         : Lavf57.71.100
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, q=2-31, 732 kb/s, 23.98 fps, 23.98 tbr, 90k tbn, 24k tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (copy)
+Press [q] to stop, [?] for help
+frame=62199 fps=1445 q=-1.0 Lsize=  300686kB time=00:43:14.09 bitrate= 949.5kbits/s speed=60.3x
+video:231881kB audio:37682kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 11.545385%
+real    0m 43.89s
+user    0m 35.06s
+sys     0m 6.05s
+
+build3: all CPU related config options not used and without pic (slower)
+
+time ffmpeg -fflags +genpts -threads auto -i fringe.mp4 -y -c:v copy -bsf:v h264_mp4t
+oannexb -c:a copy -map 0:0 -map 0:1 -sn -f mpegts fringe.out.stf
+ffmpeg version n3.3.1-8-g6ee4b20-compiled_by_barmalej2_for_ffp0.7arm Copyright (c) 2000-2017 the FFmpeg developers
+  built with gcc 4.9.2 (GCC)
+  configuration: --prefix=/ffp --disable-debug --disable-stripping --disable-ffplay --disable-ffserver --disable-doc --disable-htmlpages --disable-podpages --disable-txtpages --disable-xlib --disable-static --enable-shared --enable-gpl --enable-avresample --enable-gnutls --enable-libass --enable-libmp3lame --enable-libopus --enable-librtmp --enable-libshine --enable-libtheora --enable-libtwolame --enable-libv4l2 --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --extra-cflags=-Wno-deprecated-declarations --extra-version=compiled_by_barmalej2_for_ffp0.7arm
+  libavutil      55. 58.100 / 55. 58.100
+  libavcodec     57. 89.100 / 57. 89.100
+  libavformat    57. 71.100 / 57. 71.100
+  libavdevice    57.  6.100 / 57.  6.100
+  libavfilter     6. 82.100 /  6. 82.100
+  libavresample   3.  5.  0 /  3.  5.  0
+  libswscale      4.  6.100 /  4.  6.100
+  libswresample   2.  7.100 /  2.  7.100
+  libpostproc    54.  5.100 / 54.  5.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'fringe.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    creation_time   : 2013-01-18T20:50:07.000000Z
+  Duration: 00:43:14.22, start: 0.000000, bitrate: 855 kb/s
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, 732 kb/s, 23.98 fps, 23.98 tbr, 24k tbn, 47.95 tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Output #0, mpegts, to 'fringe.out.stf':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    encoder         : Lavf57.71.100
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, q=2-31, 732 kb/s, 23.98 fps, 23.98 tbr, 90k tbn, 24k tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (copy)
+Press [q] to stop, [?] for help
+frame=62199 fps=1371 q=-1.0 Lsize=  300686kB time=00:43:14.09 bitrate= 949.5kbits/s speed=57.2x
+video:231881kB audio:37682kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 11.545385%
+real    0m 46.30s
+user    0m 37.47s
+sys     0m 6.31s
+
+build4: same as build3 with pic enabled:
+
+time ffmpeg -fflags +genpts -threads auto -i fringe.mp4 -y -c:v copy -bsf:v h264_mp4t
+oannexb -c:a copy -map 0:0 -map 0:1 -sn -f mpegts fringe.out.stf
+ffmpeg version n3.3.1-8-g6ee4b20-compiled_by_barmalej2_for_ffp0.7arm Copyright (c) 2000-2017 the FFmpeg developers
+  built with gcc 4.9.2 (GCC)
+  configuration: --prefix=/ffp --disable-debug --disable-stripping --disable-ffplay --disable-ffserver --disable-doc --disable-htmlpages --disable-podpages --disable-txtpages --disable-xlib --disable-static --enable-shared --enable-pic --enable-gpl --enable-avresample --enable-gnutls --enable-libass --enable-libmp3lame --enable-libopus --enable-librtmp --enable-libshine --enable-libtheora --enable-libtwolame --enable-libv4l2 --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --extra-cflags=-Wno-deprecated-declarations --extra-version=compiled_by_barmalej2_for_ffp0.7arm
+  libavutil      55. 58.100 / 55. 58.100
+  libavcodec     57. 89.100 / 57. 89.100
+  libavformat    57. 71.100 / 57. 71.100
+  libavdevice    57.  6.100 / 57.  6.100
+  libavfilter     6. 82.100 /  6. 82.100
+  libavresample   3.  5.  0 /  3.  5.  0
+  libswscale      4.  6.100 /  4.  6.100
+  libswresample   2.  7.100 /  2.  7.100
+  libpostproc    54.  5.100 / 54.  5.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'fringe.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    creation_time   : 2013-01-18T20:50:07.000000Z
+  Duration: 00:43:14.22, start: 0.000000, bitrate: 855 kb/s
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, 732 kb/s, 23.98 fps, 23.98 tbr, 24k tbn, 47.95 tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Output #0, mpegts, to 'fringe.out.stf':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 1
+    compatible_brands: isom
+    encoder         : Lavf57.71.100
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown), 720x404, q=2-31, 732 kb/s, 23.98 fps, 23.98 tbr, 90k tbn, 24k tbc (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:28:19.000000Z
+      handler_name    : GPAC ISO Video Handler
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 118 kb/s (default)
+    Metadata:
+      creation_time   : 2013-01-18T20:50:08.000000Z
+      handler_name    : GPAC ISO Audio Handler
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (copy)
+Press [q] to stop, [?] for help
+frame=62199 fps=1384 q=-1.0 Lsize=  300686kB time=00:43:14.09 bitrate= 949.5kbits/s speed=57.7x
+video:231881kB audio:37682kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 11.545385%
+real    0m 45.67s
+user    0m 38.01s
+sys     0m 5.68s
+ 

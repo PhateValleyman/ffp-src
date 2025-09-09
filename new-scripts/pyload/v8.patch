@@ -1,0 +1,20 @@
+--- Makefile.orig	2014-04-18 06:16:16.000000000 +0000
++++ Makefile	2014-04-18 06:21:33.255084043 +0000
+@@ -144,7 +144,7 @@
+ else
+ # Deprecated (use arm_version instead): armv7=false/true
+ ifeq ($(armv7), false)
+-  GYPFLAGS += -Darm_version=6
++  GYPFLAGS += -Darm_version=5
+ else
+ ifeq ($(armv7), true)
+   GYPFLAGS += -Darm_version=7
+@@ -172,7 +172,7 @@
+ # xxx: vfp, vfpv3-d16, vfpv3, neon.
+ ifeq ($(armfpu),)
+ ifneq ($(vfp3), off)
+-  GYPFLAGS += -Darm_fpu=default
++  GYPFLAGS += -Darm_fpu=none
+ endif
+ else
+   GYPFLAGS += -Darm_fpu=$(armfpu)

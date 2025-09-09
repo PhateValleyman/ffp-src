@@ -1,0 +1,31 @@
+diff -rupN perl-5.24.0/ext/POSIX/POSIX.xs perl-5.24.0_ffp_patched/ext/POSIX/POSIX.xs
+--- perl-5.24.0/ext/POSIX/POSIX.xs	2016-03-05 19:54:08.000000000 +0200
++++ perl-5.24.0_ffp_patched/ext/POSIX/POSIX.xs	2016-12-14 09:28:28.000000000 +0200
+@@ -34,9 +34,9 @@
+ #ifdef I_FLOAT
+ #include <float.h>
+ #endif
+-#ifdef I_FENV
++/*#ifdef I_FENV
+ #include <fenv.h>
+-#endif
++#endif*/
+ #ifdef I_LIMITS
+ #include <limits.h>
+ #endif
+diff -rupN perl-5.24.0/hints/linux.sh perl-5.24.0_ffp_patched/hints/linux.sh
+--- perl-5.24.0/hints/linux.sh	2016-03-01 14:33:02.000000000 +0200
++++ perl-5.24.0_ffp_patched/hints/linux.sh	2016-12-14 09:24:38.111453134 +0200
+@@ -64,6 +64,12 @@ if echo " $libswanted " | grep -q ' gdbm
+     libswanted="$libswanted gdbm_compat"
+ fi
+ 
++# uClibc is lib/libc.so.0
++if test -L ${prefix}/lib/libc.so.0; then
++    libc=`ls -l ${prefix}/lib/libc.so.0 | awk '{print $NF}'`
++    libc=${prefix}/lib/$libc
++fi
++
+ # Configure may fail to find lstat() since it's a static/inline
+ # function in <sys/stat.h>.
+ d_lstat=define

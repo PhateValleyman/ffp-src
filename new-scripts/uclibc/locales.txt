@@ -1,0 +1,43 @@
+# replacing '_' in the locale name with a unique identifying character.
+# For example, internally we map "ca_ES@euro" to "caeES".  This allows for
+# smaller code and easier processing of locale names.
+
+@euro e
+@cyrillic c
+
+#---------------------------------------------------------------------------
+# Next, set to {y}es to enable and {n}o to disable the UTF-8 and the 8-bit
+# codeset locales.  Of course, you must have built the c8tables.h and
+# the wctables.h files appropriately.
+
+
+UTF-8 yes
+8-BIT yes
+
+#---------------------------------------------------------------------------
+# Now the locales
+
+en_US ISO-8859-1
+en_US.UTF-8 UTF-8
+fr_FR ISO-8859-1
+fr_FR.UTF-8 UTF-8
+fr_FR.UTF-8@euro UTF-8
+fr_FR@euro ISO-8859-15
+de_DE ISO-8859-1
+de_DE.UTF-8 UTF-8
+de_DE.UTF-8@euro UTF-8
+de_DE@euro ISO-8859-15
+ru_RU ISO-8859-5
+ru_RU.KOI8-R KOI8-R
+ru_RU.UTF-8 UTF-8
+
+# The following are standard locales, but we currently don't support
+# the necessary multibyte encodings.
+# ja_JP.EUC-JP EUC-JP
+# ko_KR.EUC-KR EUC-KR
+# zh_CN GB2312
+# zh_CN.GB18030 GB18030
+# zh_CN.GBK GBK
+# zh_TW.EUC-TW EUC-TW
+# zh_HK BIG5-HKSCS
+# zh_TW BIG5

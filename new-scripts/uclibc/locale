@@ -1,0 +1,30 @@
+#!/ffp/bin/sh
+
+print_locale_envvars()
+{
+  printenv | grep "LANG" | grep -v "_LANG" | sed "s/'/\"/g"
+  printenv | grep "LC_" | sed "s/'/\"/g"
+  printf "LC_ALL=%s\n" "${LC_ALL}"
+}
+
+print_all_locales()
+{
+  echo "C"
+  echo "POSIX"
+  printenv | grep "LANG" | cut -d'=' -f2 | sed -e "s/'//g" -e "s/\"//g" -e 's/.UTF-8//g'
+  printenv | grep "LANG" | cut -d'=' -f2 | sed -e "s/'//g" -e "s/\"//g" -e 's/UTF-8/utf8/g'
+  printenv | grep "LC_" | cut -d'=' -f2 | sed -e "s/'//g" -e "s/\"//g" -e 's/UTF-8/utf8/g'
+}
+
+all_locales_mode=""
+for arg in $@
+do
+  [ $arg = "-a" ] && all_locales_mode="yes" && continue
+  echo "$0: unknown option '${arg}'"
+done
+
+if [ -z "${all_locales_mode}" ]; then
+  print_locale_envvars | sort | uniq
+else
+  print_all_locales | sort | uniq
+fi

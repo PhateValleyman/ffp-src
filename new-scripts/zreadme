@@ -1,0 +1,54 @@
+nohup ./idle3tools.sh >>idle3tools.log 2>&1 &
+nohup ./minidlna.sh >>minidlna.log 2>&1 &
+nohup ./xmlparser.sh >>xmlparser.log 2>&1 &
+nohup ./xupnpd.sh >>xupnpd.log 2>&1 &
+nohup ./mc.sh >>mc.log 2>&1 &
+nohup ./imagemagick.sh >>imagemagick.log 2>&1 &
+nohup ./readymedia.sh >>readymedia.log 2>&1 &
+nohup ./cups.sh >>cups.log 2>&1 &
+nohup ./patchutils.sh >>patchutils.log 2>&1 &
+nohup ./v4l-dvb.sh >>v4l-dvb.log 2>&1 &
+nohup ./usbutils.sh >>usbutils.log 2>&1 &
+nohup ./kmod.sh >>kmod.log 2>&1 &
+nohup ./dvb-usb.sh >> dvb-usb.log 2>&1 &
+nohup ./libwebp.sh >>libwebp.log 2>&1 &
+nohup ./cyrus-sasl.sh >> cyrus-sasl.log 2>&1 &
+nohup ./qbittorrent.sh >> qbittorrent.log 2>&1 &
+nohup ./qt4.sh >>qt4.log 2>&1 &
+nohup ./transmission.sh >> transmission.log 2>&1 &
+nohup ./bash.sh >>bash.log 2>&1 &
+nohup ./nzbget.sh >>nzbget.log 2>&1 &
+nohup ./softethervpn.sh >>softethervpn.log 2>&1 &
+
+
+CXX flags Wno-invalid-offsetof
+FONZ MYSQL PACKAGE CONTAINS BROKEN SYMLINKS, WHICH NEEDS TO BE RECREATED:
+rm /ffp/lib/mysql/libmysqlclient_r.so.16 /ffp/lib/mysql/libmysqlclient_r.so
+cd /ffp/lib/mysql
+ln -s libmysqlclient_r.so.16.0.0 libmysqlclient_r.so
+ln -s libmysqlclient_r.so.16.0.0 libmysqlclient_r.so.16
+nohup ./pcre.sh >> pcre.log 2>&1 &
+nohup ./glib.sh >> glib.log 2>&1 &
+nohup ./libxml2.sh >> libxml2.log 2>&1 &
+nohup ./libevent.sh >> libevent.log 2>&1 &
+nohup ./curl.sh >>curl.log 2>&1 &
+nohup ./expat.sh >>expat.log 2>&1 & (for python)
+
+nohup ./cmake.sh >> cmake.log 2>&1 &
+nohup ./domoticz.sh >> domoticz.log 2>&1 &
+nohup ./wget.sh >>wget.log 2>&1 &
+nohup ./openssl.sh >> openssl.log 2>&1 &
+nohup ./openssh.sh >> openssh.log 2>&1 &
+nohup ./mono.sh >> mono.log 2>&1 &
+nohup ./mediainfo.sh >> mediainfo.log 2>&1 &
+nohup ./lzo.sh >> lzo.log 2>&1 &
+nohup ./openvpn.sh >> openvpn.log 2>&1 &
+nohup ./easyrsa.sh >> easyrsa.log 2>&1 &
+nohup ./kmod.sh >> kmod.log 2>&1 &
+nohup ./eudev.sh >> eudev.log 2>&1 &
+nohup ./mc-static.sh >>mc-static.log 2>&1 &
+nohup ./slapt-get.sh >>slapt-get.log 2>&1 &
+nohup ./rsync.sh >> rsync.log 2>&1 &
+nohup ./acme-client.sh >>acme-client.log 2>&1 &
+nohup ./coreutils.sh >> coreutils.log 2>&1 &
+nohup ./findutils.sh >> findutils.log 2>&1 &

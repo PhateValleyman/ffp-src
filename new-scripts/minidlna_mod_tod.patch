@@ -1,0 +1,11 @@
+diff -rupN minidlna/utils.c minidlnanew/utils.c
+--- minidlna/utils.c	2015-03-10 18:30:00.892235081 +0200
++++ minidlnanew/utils.c	2015-03-10 18:34:31.282369071 +0200
+@@ -381,6 +381,7 @@ is_video(const char * file)
+ 		ends_with(file, ".m2t") || ends_with(file, ".mkv")   ||
+ 		ends_with(file, ".vob") || ends_with(file, ".ts")    ||
+ 		ends_with(file, ".flv") || ends_with(file, ".xvid")  ||
++		ends_with(file, ".mod") || ends_with(file, ".tod")   ||
+ #ifdef TIVO_SUPPORT
+ 		ends_with(file, ".TiVo") ||
+ #endif

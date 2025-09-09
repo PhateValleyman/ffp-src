@@ -1,0 +1,59 @@
+git clone git://uclibc.org/uClibc.git
+cd uClibc
+git checkout -b 0.9.33.3 remotes/origin/0.9.33
+#Remove -Wdeclaration-after-statement warning to avoid this: ISO C90 forbids mixed declarations and code  
+sed -i 's| -Wdeclaration-after-statement||' Rules.mak
+cp -a ../.config .
+cp -a ../locales.txt ../codesets.txt ../uClibc-locale-20081111-32-el.tgz extra/locale
+make silentoldconfig
+make pregen
+cd extra/locale
+make
+cd ../../
+make all
+make utils
+# For first build with UTF8, if previously it wasn't, extract c8tables.h and wctables.h again from uClibc-locale-20081111-32-el.tgz to extra/locale
+make PREFIX=/i-data/7cf371c4/ffpbuildenv install
+make PREFIX=/i-data/7cf371c4/ffpbuildenv install_utils
+make PREFIX=/i-data/7cf371c4/ffpbuildenv install_runtime
+cd ..
+mv ffp tmp/ffp
+cd tmp
+makepkg uClibc 0.9.33.3_git 2
+
+# Don't change default encoding in Python
+# http://stackoverflow.com/questions/11741574/how-to-deal-with-utf-8-encoded-text-when-writing-to-the-console-in-python-3
+The only supported default encodings in Python are:
+
+ Python 2.x: ASCII
+ Python 3.x: UTF-8
+
+Python check encodings:
+import sys
+sys.getdefaultencoding()
+sys.getfilesystemencoding()
+sys.stdin.encoding
+sys.stdout.encoding
+
+
+build locale tool:
+gcc -include ./include/libc-symbols.h -Wall -Wstrict-prototypes -Wstrict-aliasing -Wformat=2 -Wmissing-noreturn \
+-Wmissing-format-attribute -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Wnonnull -Wold-style-declaration \
+-Wold-style-definition -Wshadow -Wundef -funsigned-char -fno-builtin -fno-asm -msoft-float -std=gnu99 -mlittle-endian \
+-fno-stack-protector -nostdinc -I./include -I./include -I. -I./libc/sysdeps/linux -I./libc/sysdeps/linux/arm  -Os -funit-at-a-time \
+-fmerge-all-constants -fstrict-aliasing -fno-tree-loop-optimize -fno-tree-dominator-opts -fno-strength-reduce -DHAVE_FORCED_UNWIND \
+-I./libpthread/nptl -I./libpthread/nptl -I./libpthread/nptl/sysdeps/unix/sysv/linux/arm/ \
+-I./libpthread/nptl/sysdeps/unix/sysv/linux/arm -I./libpthread/nptl/sysdeps/arm -I./libpthread/nptl/sysdeps/arm \
+-I./libpthread/nptl/sysdeps/unix/sysv/linux -I./libpthread/nptl/sysdeps/unix/sysv/linux -I./libpthread/nptl/sysdeps/pthread \
+-I./libpthread/nptl/sysdeps/pthread/bits -I./libpthread/nptl/sysdeps/generic -I./ldso/ldso/arm -I./ldso/include \
+-I./libc/sysdeps/linux/common -I/ffp/include/ -isystem \
+/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.2/include-fixed -isystem \
+/ffp/bin/../lib/gcc/arm-ffp-linux-uclibcgnueabi/4.9.2/include -DNDEBUG \
+-D__USE_STDIO_FUTEXES__ -I/ffp/include -Wl,-EL -Wl,--warn-common -Wl,--warn-once -Wl,-z,combreloc -Wl,--hash-style=gnu \
+-Wl,-z,defs -Wl,-s extra/locale/programs/locale.c -o extra/locale/programs/locale /ffp/lib/libc.a
+
+
+nohup ./uclibc_utf8.sh >> uclibc_utf8.log 2>&1 &
+nohup ./uclibc_noutf8.sh >> uclibc_noutf8.log 2>&1 &
+
+

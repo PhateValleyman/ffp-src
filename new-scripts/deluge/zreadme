@@ -1,0 +1,11 @@
+nohup ./geoip.sh >> geoip.log 2>&1 &
+nohup ./libffi.sh >> libffi.log 2>&1 &
+nohup ./icu4c.sh >> icu4c.log 2>&1 &
+nohup ./openmpi.sh >> openmpi.log 2>&1 &
+nohup ./boost.sh >> boost.log 2>&1 &
+nohup ./libtorrent_git.sh >> libtorrent_git.log 2>&1 &
+nohup ./deluge.sh >> deluge.log 2>&1 &
+nohup ./ncurses.sh >> ncurses.log 2>&1 &
+nohup ./readline.sh >> readline.log 2>&1 &
+
+CXX Flags Wno-invalid-offsetof

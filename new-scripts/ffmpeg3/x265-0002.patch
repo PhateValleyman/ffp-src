@@ -1,0 +1,88 @@
+Submitted By:            Fernando de Oliveira <famobr at yahoo dot com dot br>
+Date:                    2015-10-24
+Initial Package Version: 1.8
+Upstream Status:         not submitted
+Origin:                  https://bitbucket.org/TimothyGu/x265/commits/a9aacc5a16116f1c663d1fcb62ad9a0985043b94/raw/
+                         https://bitbucket.org/TimothyGu/x265/commits/578c5ef3dff46db38e7c36a8d3c6198a65c9746b/raw/
+Description:             Add ENABLE_STATIC:BOOL=ON, so that static lib
+                         can be disabled.
+
+Updated By:              Bruce Dubbs <bdubbs at linuxfromscratch dot org>
+Updated:                 2016-07-16
+Package Version:         2.0
+Description:             Minor fixes to be consistent with new version
+
+Updated By:              Bruce Dubbs <bdubbs at linuxfromscratch dot org>
+Updated:                 2017-04-23
+Package Version:         2.4
+Description:             Minor fixes to be consistent with new version
+
+diff -Naur a/source/CMakeLists.txt.orig b/source/CMakeLists.txt
+--- a/source/CMakeLists.txt.orig	2017-04-22 19:00:03.000000000 -0500
++++ b/source/CMakeLists.txt	2017-04-23 13:08:41.674671896 -0500
+@@ -510,20 +510,21 @@
+     endif()
+ endif()
+ source_group(ASM FILES ${ASM_SRCS})
+-if(ENABLE_DYNAMIC_HDR10)
+-    add_library(x265-static STATIC $<TARGET_OBJECTS:encoder> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:dynamicHDR10> ${ASM_OBJS} ${ASM_SRCS})
+-else()
++
++option(ENABLE_STATIC "Build static library" ON)
++if(ENABLE_STATIC)
+     add_library(x265-static STATIC $<TARGET_OBJECTS:encoder> $<TARGET_OBJECTS:common> ${ASM_OBJS} ${ASM_SRCS})
+-endif()
+-if(NOT MSVC)
+-    set_target_properties(x265-static PROPERTIES OUTPUT_NAME x265)
+-endif()
+-if(EXTRA_LIB)
+-    target_link_libraries(x265-static ${EXTRA_LIB})
+-endif()
+-install(TARGETS x265-static
+-    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+-    ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
++    if(NOT MSVC)
++        set_target_properties(x265-static PROPERTIES OUTPUT_NAME x265)
++    endif()
++    if(EXTRA_LIB)
++        target_link_libraries(x265-static ${EXTRA_LIB})
++    endif()
++    install(TARGETS x265-static
++        LIBRARY DESTINATION ${LIB_INSTALL_DIR}
++        ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
++endif(ENABLE_STATIC)
++
+ install(FILES x265.h "${PROJECT_BINARY_DIR}/x265_config.h" DESTINATION include)
+ 
+ if(CMAKE_RC_COMPILER)
+@@ -592,6 +593,10 @@
+     endif()
+ endif()
+ 
++if(NOT ENABLE_STATIC AND NOT ENABLE_SHARED)
++    message(FATAL_ERROR "Neither static nor shared libraries are enabled.")
++endif()
++
+ if(X265_LATEST_TAG)
+     # convert lists of link libraries into -lstdc++ -lm etc..
+     foreach(LIB ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES} ${PLATFORM_LIBS})
+@@ -658,12 +663,14 @@
+     else()
+         add_executable(cli ../COPYING ${InputFiles} ${OutputFiles} ${GETOPT} ${X265_RC_FILE}
+                        ${ExportDefs} x265.cpp x265.h x265cli.h x265-extras.h x265-extras.cpp)
+-        if(WIN32 OR NOT ENABLE_SHARED OR INTEL_CXX)
+-            # The CLI cannot link to the shared library on Windows, it
+-            # requires internal APIs not exported from the DLL
+-            target_link_libraries(cli x265-static ${PLATFORM_LIBS})
+-        else()
++        if(WIN32 AND NOT ENABLE_STATIC)
++            message(FATAL_ERROR "The CLI cannot link to shared library on Windows as it requires internal APIs not exported from the DLL.")
++        elseif(INTEL_CXX AND NOT ENABLE_STATIC)
++            message(FATAL_ERROR "The CLI cannot link to shared library with Intel C++ Compiler as it requires internal APIs not exported from the shared library.")
++        elseif(ENABLE_SHARED)
+             target_link_libraries(cli x265-shared ${PLATFORM_LIBS})
++        else()
++            target_link_libraries(cli x265-static ${PLATFORM_LIBS})
+         endif()
+     endif()
+     set_target_properties(cli PROPERTIES OUTPUT_NAME x265)

@@ -1,0 +1,75 @@
+nohup ./perl.sh >> perl.log 2>&1 &
+nohup ./cpanminus_perl.sh >>cpanminus_perl.log 2>&1 &
+
+perl dependencies for help2man and texinfo:
+http://pkgs.fedoraproject.org/cgit/texinfo.git/tree/texinfo.spec
+http://pkgs.fedoraproject.org/cgit/help2man.git/tree/help2man.spec
+
+mkdir -p /mnt/HD_a2/build/temp
+cd /mnt/HD_a2/build
+export PERL_CPANM_HOME=/mnt/HD_a2/build/temp
+export PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR=/mnt/HD_a2/build"
+export PERL_MB_OPT="--installdirs vendor --destdir /mnt/HD_a2/build"
+export PERL5LIB="/mnt/HD_a2/build/ffp/lib/perl5/vendor_perl/5.24.0"
+# Show current search paths
+perl -le 'print foreach @INC'
+# Current perl version
+perl -e 'print substr($^V, 1)'
+
+# Adapt source if cpanm fails at first attempt to install
+find . -type f -exec sed -i 's|/usr|/ffp|g' {} \;
+find . -type f -iname "config.*" -exec sed -i -r 's/^#! ?\/bin\/sh/#!\/ffp\/bin\/sh/' {} \;
+find . -type f -iname "config.*" -exec sed -i -r 's/^#! ?\/bin\/bash/#!\/ffp\/bin\/bash/' {} \;
+find . -type f -iname "config.*" -exec sed -i -r 's/^#! ?\/usr\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -iname "configure" -exec sed -i -r 's/^#! ?\/bin\/sh/#!\/ffp\/bin\/sh/' {} \;
+find . -type f -iname "configure" -exec sed -i -r 's/^#! ?\/bin\/bash/#!\/ffp\/bin\/bash/' {} \;
+find . -type f -iname "configure" -exec sed -i -r 's/^#! ?\/usr\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -executable -exec sed -i -r 's/^#! ?\/bin\/sh/#!\/ffp\/bin\/sh/' {} \;
+find . -type f -executable -exec sed -i -r 's/^#! ?\/bin\/bash/#!\/ffp\/bin\/bash/' {} \;
+find . -type f -executable -exec sed -i -r 's/^#! ?\/usr\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/usr\/bin\/python/#!\/ffp\/bin\/python/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/usr\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/bin\/python/#!\/ffp\/bin\/python/' {} \;
+find . -type f -iname "*.py*" -exec sed -i -r 's/^#! ?\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -iname "*.pl*" -exec sed -i -r 's/^#! ?\/usr\/bin\/perl/#!\/ffp\/bin\/perl/' {} \;
+find . -type f -iname "*.pl*" -exec sed -i -r 's/^#! ?\/usr\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+find . -type f -iname "*.pl*" -exec sed -i -r 's/^#! ?\/bin\/perl/#!\/ffp\/bin\/perl/' {} \;
+find . -type f -iname "*.pl*" -exec sed -i -r 's/^#! ?\/bin\/env/#!\/ffp\/bin\/env/' {} \;
+#./configure --prefix=/ffp --disable-nls
+
+# Do clean up after all modules installed 
+find /mnt/HD_a2/build/ffp/lib -type f -iname "perllocal.pod" -exec rm -f {} \;
+find /mnt/HD_a2/build/ffp/lib -type f -iname ".packlist" -exec rm -f {} \;
+#rm -rf /mnt/HD_a2/build/ffp/lib/perl5/vendor_perl/5.14.2/arm-linux-thread-multi-64int/.meta
+#rm -rf /ffp/lib/perl5/site_perl/5.24.0/arm-linux-thread-multi-64int/.meta
+unset PERL_MM_OPT
+unset PERL_MB_OPT
+unset PERL5LIB
+unset PERL_CPANM_HOME
+
+#Correct hasbang line for scripts in ffp/bin after install
+#!/e-data/aedfebd6-3d56-4344-8f80-b1ca60355017/ffproot/ffp/bin/perl
+
+
+CPAN::Meta::Check Capture::Tiny Class::Inspector File::DesktopEntry File::Listing File::MimeInfo
+Class::MethodMaker Config::ApacheFormat Crypt::SSLeay DBD::SQLite DBD::mysql DBI Data::Dumper
+Data::OptList Date::Format Date::Parse Devel::Symdump Digest::MD5 Digest::SHA Encode Encode::Locale
+ExtUtils::Config ExtUtils::Helpers ExtUtils::InstallPaths ExtUtils::MakeMaker File::BaseDir File::Which
+Getopt::Long Getopt::Long::Descriptive HTML::Entities HTML::HeadParser HTML::Parser HTML::Tagset
+HTTP::Cookies HTTP::Daemon HTTP::Date HTTP::Message HTTP::Negotiate HTTP::Request HTTP::Request::Common
+HTTP::Response HTTP::Status IO::HTML IO::Interface::Simple IO::SessionData IO::Socket::Multicast
+IO::Socket::SSL IO::String IPC::System::Simple Image::Info LWP LWP::MediaTypes LWP::Protocol::https
+Locale::Messages Locale::gettext MP3::Info MP4::Info Module::Build Module::Build::Tiny
+Module::Implementation Module::Runtime Mozilla::CA Net::HTTP Net::IP Net::Netmask Net::SSLeay
+Ogg::Vorbis::Header::PurePerl Params::Util Params::Validate Path::Class Pod::Coverage Proc::ProcessTable
+SOAP::Lite Socket Sub::Exporter Sub::Exporter::Util Sub::Install Sub::Uplevel Sys::Syslog TAP::Harness
+TAP::Harness::Env Task::Weaken Test::Deep Test::Exception Test::Fatal Test::Harness Test::NoWarnings
+Test::Pod Test::Pod::Coverage Test::Requires Test::Simple Test::Tester Test::Warn Test::Warnings
+Text::ParseWords Text::Tabs Text::Unidecode Text::Wrap Time::HiRes Try::Tiny URI URI::Escape URI::Split
+Unicode::EastAsianWidth WWW::RobotRules XML::NamespaceSupport XML::Parser XML::Parser::Lite XML::SAX
+XML::SAX::Base XML::SAX::Expat XML::Simple libintl-perl threads threads::shared
+
+REMOVED from last release: Audio::FLAC::Header Audio::WMA Audio::Wav GD GD::Graph GD::Graph::area GD::Text
+
+
+

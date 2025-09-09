@@ -1,0 +1,5 @@
+nohup ./mariadb.sh >> mariadb.log 2>&1 &
+nohup ./xmlrpc-c.sh >> xmlrpc-c.log 2>&1 &
+nohup ./rtorrent.sh >> rtorrent.log 2>&1 &
+nohup ./sqlite.sh >> sqlite.log 2>&1 &
+nohup ./php.sh >> php.log 2>&1 &

@@ -1,0 +1,38 @@
+Author: Jaret Cantu <jaret.cantu@timesys.com>
+Date:   Wed Jan 14 14:41:31 EST 2015
+
+    Define constants for older kernels.
+
+    In the case of RAMFS_MAGIC, this symbol was actually defined in
+    old kernels, too, but it was never exported, so it is safe to do.
+
+--- eudev-1.6/src/shared/util.c.orig	2014-04-04 13:36:37.000000000 -0400
++++ eudev-1.6/src/shared/util.c	2015-01-12 11:45:06.597621189 -0500
+@@ -69,6 +69,14 @@
+ #include "hashmap.h"
+ #include "fileio.h"
+ 
++#ifndef RAMFS_MAGIC
++#define RAMFS_MAGIC	0x858458f6
++#endif
++
++#ifndef TMPFS_MAGIC
++#define TMPFS_MAGIC	0x01021994
++#endif
++
+ int saved_argc = 0;
+ char **saved_argv = NULL;
+ 
+--- eudev-1.6/src/udev/udev-builtin-input_id.c.orig	2015-01-14 12:36:09.596933256 -0500
++++ eudev-1.6/src/udev/udev-builtin-input_id.c	2015-01-14 12:37:21.307928671 -0500
+@@ -38,6 +38,10 @@
+ #define LONG(x) ((x)/BITS_PER_LONG)
+ #define test_bit(bit, array)    ((array[LONG(bit)] >> OFF(bit)) & 1)
+ 
++#ifndef BTN_TRIGGER_HAPPY
++#define BTN_TRIGGER_HAPPY	0x2c0
++#endif
++
+ /*
+  * Read a capability attribute and return bitmask.
+  * @param dev udev_device

@@ -1,0 +1,27 @@
+diff -rupN minidlna/clients.c minidlnanew/clients.c
+--- minidlna/clients.c	2014-10-07 12:57:46.707370786 +0300
++++ minidlnanew/clients.c	2014-10-07 13:02:39.987517121 +0300
+@@ -66,21 +66,14 @@ struct client_type_s client_types[] =
+ 	/* User-Agent: DLNADOC/1.50 SEC_HHP_[TV]UE40D7000/1.0 */
+ 	/* User-Agent: DLNADOC/1.50 SEC_HHP_ Family TV/1.0 */
+ 	{ ESamsungSeriesCDE,
+-	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE,
++	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE | FLAG_SAMSUNG_DCM10,
+ 	  "Samsung Series [CDEF]",
+ 	  "SEC_HHP_",
+ 	  EUserAgent
+ 	},
+ 
+-	{ ESamsungSeriesA,
+-	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE,
+-	  "Samsung Series A",
+-	  "SamsungWiselinkPro",
+-	  EUserAgent
+-	},
+-
+ 	{ ESamsungSeriesB,
+-	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE,
++	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE | FLAG_SAMSUNG_DCM10,
+ 	  "Samsung Series B",
+ 	  "Samsung DTV DMR",
+ 	  EModelName

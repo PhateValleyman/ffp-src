@@ -1,0 +1,73 @@
+diff -rupN acme-client-portable-0.1.14/GNUmakefile acme-client-portable-0.1.14_ffp/GNUmakefile
+--- acme-client-portable-0.1.14/GNUmakefile	2016-11-03 02:29:39.000000000 +0200
++++ acme-client-portable-0.1.14_ffp/GNUmakefile	2016-11-20 17:12:55.000000000 +0200
+@@ -1,5 +1,5 @@
+-PREFIX	?= /usr/local
+-MAN1DIR	?= $(PREFIX)/man/man1
++PREFIX	?= /ffp
++MAN1DIR	?= $(PREFIX)/share/man/man1
+ BINDIR	?= $(PREFIX)/bin
+ CFLAGS	+= -g -W -Wall -DHAVE_CONFIG_H
+ OBJS 	 = acctproc.o \
+@@ -31,8 +31,8 @@ else
+ LIBBSD	 = 
+ CFLAGS	+= -DMUSL_LIBC
+ endif
+-CFLAGS	+= -I/usr/local/include/libressl
+-LDFLAGS += -L/usr/local/lib
++CFLAGS	+= -I /i-data/7cf371c4/build/ffp/include -I/i-data/7cf371c4/build/ffp/include/openssl
++LDFLAGS += -L/i-data/7cf371c4/build/ffp/lib
+ OBJS	+= util-portable.o \
+ 	   sandbox-null.o
+ else ifeq ($(shell uname), Darwin)
+@@ -78,7 +78,7 @@ endif
+ all: acme-client
+ 
+ acme-client: $(OBJS)
+-	$(CC) -o $@ $(OBJS) $(LDFLAGS) -ltls -lssl -lcrypto $(LIBBSD)
++	$(CC) -pthread -o $@ $(OBJS) $(LDFLAGS) -ltls -lssl -lssp -lcrypto $(LIBBSD) -static
+ 
+ # This is for synchronising from -portable to the master.
+ rmerge:
+diff -rupN acme-client-portable-0.1.14/extern.h acme-client-portable-0.1.14_ffp/extern.h
+--- acme-client-portable-0.1.14/extern.h	2016-11-03 02:29:39.000000000 +0200
++++ acme-client-portable-0.1.14_ffp/extern.h	2016-11-20 17:11:32.218637369 +0200
+@@ -18,7 +18,7 @@
+ #define EXTERN_H
+ 
+ #ifndef PATH_VAR_EMPTY
+-#define	PATH_VAR_EMPTY "/var/empty"
++#define	PATH_VAR_EMPTY "/ffp/var/empty"
+ #endif
+ 
+ #define MAX_SERVERS_DNS 8
+diff -rupN acme-client-portable-0.1.14/http.c acme-client-portable-0.1.14_ffp/http.c
+--- acme-client-portable-0.1.14/http.c	2016-11-03 02:29:39.000000000 +0200
++++ acme-client-portable-0.1.14_ffp/http.c	2016-11-20 17:11:32.218637369 +0200
+@@ -45,7 +45,7 @@
+ #include "extern.h"
+ 
+ #ifndef DEFAULT_CA_FILE
+-# define DEFAULT_CA_FILE "/etc/ssl/cert.pem"
++# define DEFAULT_CA_FILE "/ffp/etc/ssl/cert.pem"
+ #endif
+ 
+ /*
+diff -rupN acme-client-portable-0.1.14/main.c acme-client-portable-0.1.14_ffp/main.c
+--- acme-client-portable-0.1.14/main.c	2016-11-03 02:29:39.000000000 +0200
++++ acme-client-portable-0.1.14_ffp/main.c	2016-11-20 17:11:32.228640612 +0200
+@@ -33,10 +33,10 @@
+ 
+ #define AGREEMENT "https://letsencrypt.org" \
+ 		  "/documents/LE-SA-v1.1.1-August-1-2016.pdf"
+-#define SSL_DIR "/etc/ssl/acme"
+-#define SSL_PRIV_DIR "/etc/ssl/acme/private"
+-#define ETC_DIR "/etc/acme"
+-#define WWW_DIR "/var/www/acme"
++#define SSL_DIR "/ffp/etc/ssl/acme"
++#define SSL_PRIV_DIR "/ffp/etc/ssl/acme/private"
++#define ETC_DIR "/ffp/etc/acme"
++#define WWW_DIR "/ffp/var/www/acme"
+ #define PRIVKEY_FILE "privkey.pem"
+ 
+ /*
